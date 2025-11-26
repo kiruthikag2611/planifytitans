@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -19,15 +18,15 @@ interface UseDocOptions<T> {
 }
 
 export function useDoc<T>(
-  pathOrRef: string | DocumentReference | null,
+  pathOrRef: string | DocumentReference<DocumentData> | null,
   options?: UseDocOptions<T>
 ) {
   const firestore = useFirestore();
-  const [data, setData] = useState<T | null>(options?.initialData || null);
+  const [data, setData] = useState<T | null>(options?.initialData ?? null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
-  const memoizedRef = useMemo(() => {
+  const memoizedRef = useMemo<DocumentReference<DocumentData> | null>(() => {
     if (!pathOrRef || !firestore) return null;
     if (typeof pathOrRef === 'string') {
       return doc(firestore, pathOrRef);
@@ -49,34 +48,54 @@ export function useDoc<T>(
       (snapshot: DocumentSnapshot<DocumentData>) => {
         if (snapshot.exists()) {
           const docData = snapshot.data();
-          // Ensure we don't cause a re-render if the data is the same
-          setData(prevData => {
-            const newData = { ...docData, id: snapshot.id } as T;
-            if (JSON.stringify(prevData) === JSON.stringify(newData)) {
-              return prevData;
+          const newData = { ...docData, id: snapshot.id } as unknown as T;
+
+          // Prevent unnecessary state updates (deep compare)
+          setData((currentData) => {
+            try {
+              if (JSON.stringify(currentData) === JSON.stringify(newData)) {
+                return currentData;
+              }
+            } catch {
+              // If stringify fails for some reason, fall back to updating
             }
             return newData;
           });
         } else {
+          // Document does not exist -> clear data
           setData(null);
         }
+
         setLoading(false);
         setError(null);
       },
-      async (err: FirestoreError) => {
-        const permissionError = new FirestorePermissionError({
-          path: memoizedRef.path,
-          operation: 'get',
-        });
-        errorEmitter.emit('permission-error', permissionError);
+      (err: FirestoreError) => {
+        // Convert/emit permission error and set state
+        try {
+          const permissionError = new FirestorePermissionError({
+            path: memoizedRef.path,
+            operation: 'get',
+          });
+          errorEmitter.emit('permission-error', permissionError);
+        } catch {
+          // ignore if construction/emit fails
+        }
 
         setError(err);
         setLoading(false);
       }
     );
 
-    return () => unsubscribe();
+    return () => {
+      try {
+        unsubscribe();
+      } catch {
+        // ignore unsubscribe errors
+      }
+    };
   }, [memoizedRef]);
 
   return { data, loading, error };
 }
+
+
