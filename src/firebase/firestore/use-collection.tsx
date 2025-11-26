@@ -36,7 +36,11 @@ export function useCollection<T>(
         return ref; // Keep it simple, specific queries should be memoized in the component
     }
     return pathOrQuery;
+<<<<<<< HEAD
   }, [pathOrQuery, firestore]);
+=======
+  }, [pathOrQuery, firestore, options?.query]);
+>>>>>>> 44a3bc7 (Try fixing this error: `Console Error: FirebaseError: Missing or insuffi)
 
   useEffect(() => {
     if (!memoizedQuery) {
@@ -67,16 +71,15 @@ export function useCollection<T>(
         setLoading(false);
         setError(null);
       },
-      (err: FirestoreError) => {
+      async (err: FirestoreError) => {
         const permissionError = new FirestorePermissionError({
-          path: 'path' in memoizedQuery ? memoizedQuery.path : 'unknown',
+          path: 'path' in memoizedQuery ? memoizedQuery.path : 'unknown path',
           operation: 'list',
         });
         errorEmitter.emit('permission-error', permissionError);
 
         setError(err);
         setLoading(false);
-        console.error(`Error fetching collection: ${err.message}`);
       }
     );
 

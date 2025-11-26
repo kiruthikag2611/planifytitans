@@ -49,6 +49,7 @@ export function useDoc<T>(
       (snapshot: DocumentSnapshot<DocumentData>) => {
         if (snapshot.exists()) {
           const docData = snapshot.data();
+<<<<<<< HEAD
           // Ensure we don't cause a re-render if the data is the same
           setData(prevData => {
             const newData = { ...docData, id: snapshot.id } as T;
@@ -57,13 +58,17 @@ export function useDoc<T>(
             }
             return newData;
           });
+=======
+          const docId = 'id' in docData ? docData.id : snapshot.id;
+          setData({ ...docData, id: docId } as T);
+>>>>>>> 44a3bc7 (Try fixing this error: `Console Error: FirebaseError: Missing or insuffi)
         } else {
           setData(null);
         }
         setLoading(false);
         setError(null);
       },
-      (err: FirestoreError) => {
+      async (err: FirestoreError) => {
         const permissionError = new FirestorePermissionError({
           path: memoizedRef.path,
           operation: 'get',
@@ -72,7 +77,6 @@ export function useDoc<T>(
 
         setError(err);
         setLoading(false);
-        console.error(`Error fetching document: ${err.message}`);
       }
     );
 
