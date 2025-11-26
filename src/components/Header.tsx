@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -8,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { SidebarTrigger } from './ui/sidebar';
 import { useUser } from '@/firebase/auth/use-user';
 import { Skeleton } from './ui/skeleton';
+<<<<<<< HEAD
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { useFirestore } from '@/firebase/provider';
@@ -18,6 +18,13 @@ export function Header() {
   const router = useRouter();
   const { user, status } = useUser();
   const firestore = useFirestore();
+=======
+
+export function Header() {
+  const router = useRouter();
+  const [isClient, setIsClient] = React.useState(false);
+  const { user, status } = useUser();
+>>>>>>> 669a409 (give the username in the right top of the desktop)
 
   const userDocRef = user && firestore ? doc(firestore, 'users', user.uid) : null;
 
@@ -41,6 +48,7 @@ export function Header() {
             <ArrowLeft className="h-5 w-5" />
         </Button>
       </div>
+<<<<<<< HEAD
       
       <div className="flex items-center gap-3">
         {status === 'loading' ? (
@@ -82,6 +90,15 @@ export function Header() {
               </PopoverContent>
             </Popover>
         ) : null}
+=======
+      <div className="flex items-center gap-4">
+        {status === 'loading' && (
+          <Skeleton className="h-6 w-24" />
+        )}
+        {status === 'authenticated' && user && (
+            <span className="font-medium">{user.displayName}</span>
+        )}
+>>>>>>> 669a409 (give the username in the right top of the desktop)
       </div>
     </header>
   );
