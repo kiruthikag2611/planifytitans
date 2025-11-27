@@ -3,6 +3,17 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from "react";
 import { addWeeks, format } from "date-fns";
 
+/**
+ * Provider + types for the onboarding / questionnaire flow.
+ * This file merges the branches: a compact variant + a richer variant.
+ * It keeps the richer types but keeps them local to this file so
+ * you can finish the rebase without touching global types.
+ */
+
+/* ------------------------
+   Local types
+   ------------------------ */
+
 type Category = "academics" | "personal" | null;
 type SubCategory = "student" | "professor" | "management" | null;
 
@@ -42,13 +53,17 @@ type OnboardingAnswers = {
   max_continuous_study_minutes: number;
   min_break_minutes: number;
   tasks: Task[];
-  activities: any[]; // To be defined more strictly later
-  avoid_times: any[]; // To be defined more strictly later
+  activities: any[]; // TODO: tighten types later
+  avoid_times: any[]; // TODO: tighten types later
   max_daily_study_minutes?: number;
   allow_auto_reschedule: boolean;
   notifications_default: number;
   preference_weight: "conservative" | "aggressive";
 };
+
+/* ------------------------
+   Context shape
+   ------------------------ */
 
 interface QuestionnaireContextType {
   category: Category;
@@ -60,6 +75,10 @@ interface QuestionnaireContextType {
   reset: () => void;
   getFormattedAnswers: () => any;
 }
+
+/* ------------------------
+   Defaults
+   ------------------------ */
 
 const defaultWorkingHours: WorkingHours = {
   monday: { start: "08:00", end: "22:00" },
@@ -87,6 +106,10 @@ const initialState: Partial<OnboardingAnswers> = {
   preference_weight: "conservative",
 };
 
+/* ------------------------
+   Context & Provider
+   ------------------------ */
+
 const QuestionnaireContext = createContext<QuestionnaireContextType | undefined>(undefined);
 
 export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => {
@@ -105,29 +128,27 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
   }, []);
 
   const getFormattedAnswers = () => {
-    // If no subCategory and not personal, we can't produce a detailed payload
+    // If no subCategory and not personal, return a minimal payload
     if (!subCategory && category !== "personal") return null;
 
     const today = new Date();
-    const term_start = (answers.term_start as string) || format(today, "yyyy-MM-dd");
+    const term_start = (answers.term_start as string) ?? format(today, "yyyy-MM-dd");
     const term_end =
-      (answers.term_end as string) || format(addWeeks(new Date(term_start), 12), "yyyy-MM-dd");
+      (answers.term_end as string) ?? format(addWeeks(new Date(term_start), 12), "yyyy-MM-dd");
 
-    // Simple default mapping; can be expanded to more detailed payloads
     if (category === "personal") {
       return {
         category: "Personal",
-        // Use available answers where possible
         timezone: answers.timezone ?? "Asia/Kolkata",
-        workHours: answers.working_hours ?? defaultWorkingHours,
-        preferredTime: answers.preferred_study_times ?? ["Evening"],
-        // keep other fields to allow downstream processing
+        working_hours: answers.working_hours ?? defaultWorkingHours,
+        preferred_study_times: answers.preferred_study_times ?? [],
+        // keep answers so downstream AI/logic can read more fields
         ...answers,
       };
     }
 
-    // Academics branch
-    let payload: any = {
+    // Academics payload
+    const basePayload: any = {
       category: "Academics",
       term_start,
       term_end,
@@ -143,45 +164,40 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
       },
     };
 
-    // Add subcategory-specific placeholders or extracted values
     switch (subCategory) {
       case "student":
-        payload = {
-          ...payload,
+        return {
+          ...basePayload,
           subCategory: "Student",
-          // Example placeholders — replace with actual answers mapping
           collegeName: (answers as any).collegeName ?? undefined,
           department: (answers as any).department ?? undefined,
           scheduleDetails: {
             classes: answers.classes,
             tasks: answers.tasks,
+            preferences: {
+              studyTimes: answers.preferred_study_times,
+              blockSizes: answers.study_block_sizes,
+            },
           },
         };
-        break;
 
       case "professor":
-        payload = {
-          ...payload,
+        return {
+          ...basePayload,
           subCategory: "Professor",
-          // professor-specific fields (placeholders)
           officeHours: (answers as any).officeHours ?? undefined,
         };
-        break;
 
       case "management":
-        payload = {
-          ...payload,
+        return {
+          ...basePayload,
           subCategory: "Management",
-          // management-specific fields (placeholders)
           responsibilities: (answers as any).responsibilities ?? undefined,
         };
-        break;
 
       default:
-        break;
+        return basePayload;
     }
-
-    return payload;
   };
 
   return (
@@ -209,3 +225,4 @@ export const useQuestionnaire = () => {
   }
   return context;
 };
+
