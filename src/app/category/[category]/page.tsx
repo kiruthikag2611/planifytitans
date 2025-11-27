@@ -28,11 +28,14 @@ export default function SubCategoryPage() {
   }
 
   const handleSelect = (sub: string) => {
+    // Correctly set category and subCategory in the context
     if (category === 'academics' || category === 'personal') {
       setCategory(category);
     }
-    if (sub.toLowerCase() === 'student' || sub.toLowerCase() === 'professor' || sub.toLowerCase() === 'management') {
-      setSubCategory(sub.toLowerCase() as "student" | "professor" | "management");
+    
+    const subLower = sub.toLowerCase();
+    if (subLower === 'student' || subLower === 'professor' || subLower === 'management') {
+      setSubCategory(subLower as "student" | "professor" | "management");
     }
 
     const nextPath = `/onboarding/1`;
