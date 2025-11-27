@@ -1,161 +1,255 @@
 
 {
     "entities": {
-        "userProfile": {
-            "title": "User Profile",
-            "description": "Represents a user's profile information.",
+      "userProfile": {
+        "title": "User Profile",
+        "description": "Represents a user's profile information.",
+        "type": "object",
+        "properties": {
+          "uid": {
+            "type": "string",
+            "description": "The user's unique ID."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "The user's email address."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "The user's display name."
+          },
+          "photoURL": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the user's profile picture."
+          },
+          "answers": {
             "type": "object",
-            "properties": {
-                "uid": {
-                    "type": "string",
-                    "description": "The user's unique ID."
-                },
-                "email": {
-                    "type": "string",
-                    "format": "email",
-                    "description": "The user's email address."
-                },
-                "displayName": {
-                    "type": "string",
-                    "description": "The user's display name."
-                },
-                "photoURL": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "URL of the user's profile picture."
-                },
-                "answers": {
-                    "type": "object",
-                    "description": "The user's answers to the questionnaire."
-                }
-            },
-            "required": ["uid", "email"]
+            "description": "The user's answers to the questionnaire."
+          }
         },
-        "calendarEvent": {
-            "title": "Calendar Event",
-            "description": "Represents an event in the user's calendar.",
-            "type": "object",
-            "properties": {
-                "eventId": {
-                    "type": "string",
-                    "description": "The unique ID for the event."
-                },
-                "userId": {
-                    "type": "string",
-                    "description": "The ID of the user who owns the event."
-                },
-                "title": {
-                    "type": "string",
-                    "description": "The title of the event."
-                },
-                "type": {
-                    "type": "string",
-                    "enum": ["Class", "Assignment", "Exam", "Task", "Custom"],
-                    "description": "The type of the event."
-                },
-                "description": {
-                    "type": "string",
-                    "description": "A description of the event."
-                },
-                "date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "The date of the event in YYYY-MM-DD format."
-                },
-                "startTime": {
-                    "type": "string",
-                    "format": "time",
-                    "description": "The start time of the event in HH:MM format."
-                },
-                "endTime": {
-                    "type": "string",
-                    "format": "time",
-                    "description": "The end time of the event in HH:MM format."
-                },
-                "subject": {
-                    "type": "string",
-                    "description": "The subject related to the event."
-                },
-                "teacher": {
-                    "type": "string",
-                    "description": "The teacher related to the event."
-                },
-                "room": {
-                    "type": "string",
-                    "description": "The room or location of the event."
-                },
-                "priority": {
-                    "type": "string",
-                    "enum": ["low", "medium", "high"],
-                    "description": "The priority of the event."
-                },
-                "difficultyLevel": {
-                    "type": "string",
-                    "enum": ["easy", "moderate", "hard"],
-                    "description": "The difficulty level associated with the event."
-                },
-                "notificationEnabled": {
-                    "type": "boolean",
-                    "description": "Whether notifications are enabled for this event."
-                },
-                "reminderTime": {
-                    "type": "string",
-                    "enum": ["none", "10min", "30min", "1hr", "1day", "custom"],
-                    "description": "When to send a reminder before the event."
-                },
-                "createdAt": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "The timestamp when the event was created."
-                },
-                "updatedAt": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "The timestamp when the event was last updated."
-                }
-            },
-            "required": ["eventId", "userId", "title", "type", "date", "startTime", "endTime"]
+        "required": [
+          "uid",
+          "email"
+        ]
+      },
+      "calendarEvent": {
+        "title": "Calendar Event",
+        "description": "Represents an event in the user's calendar.",
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "description": "The unique ID for the event."
+          },
+          "userId": {
+            "type": "string",
+            "description": "The ID of the user who owns the event."
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the event."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "Class",
+              "Assignment",
+              "Exam",
+              "Task",
+              "Custom"
+            ],
+            "description": "The type of the event."
+          },
+          "description": {
+            "type": "string",
+            "description": "A description of the event."
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "The date of the event in YYYY-MM-DD format."
+          },
+          "startTime": {
+            "type": "string",
+            "format": "time",
+            "description": "The start time of the event in HH:MM format."
+          },
+          "endTime": {
+            "type": "string",
+            "format": "time",
+            "description": "The end time of the event in HH:MM format."
+          },
+          "subject": {
+            "type": "string",
+            "description": "The subject related to the event."
+          },
+          "teacher": {
+            "type": "string",
+            "description": "The teacher related to the event."
+          },
+          "room": {
+            "type": "string",
+            "description": "The room or location of the event."
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "description": "The priority of the event."
+          },
+          "difficultyLevel": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "moderate",
+              "hard"
+            ],
+            "description": "The difficulty level associated with the event."
+          },
+          "notificationEnabled": {
+            "type": "boolean",
+            "description": "Whether notifications are enabled for this event."
+          },
+          "reminderTime": {
+            "type": "string",
+            "enum": [
+              "none",
+              "10min",
+              "30min",
+              "1hr",
+              "1day",
+              "custom"
+            ],
+            "description": "When to send a reminder before the event."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the event was created."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the event was last updated."
+          }
         },
-        "activity": {
-            "title": "Activity",
-            "description": "Represents a college event like a seminar, workshop, or fest.",
-            "type": "object",
-            "properties": {
-                "activityId": { "type": "string", "description": "Unique ID for the activity." },
-                "title": { "type": "string", "description": "Title of the activity." },
-                "description": { "type": "string", "description": "Detailed description of the activity." },
-                "location": { "type": "string", "description": "Venue or location of the activity." },
-                "startDatetime": { "type": "string", "format": "date-time", "description": "Start date and time." },
-                "endDatetime": { "type": "string", "format": "date-time", "description": "End date and time." },
-                "organizer": { "type": "string", "description": "Name of the organizing body or person." },
-                "imageUrl": { "type": "string", "format": "uri", "description": "Optional URL for an image." },
-                "link": { "type": "string", "format": "uri", "description": "Optional link for more details." },
-                "tags": { "type": "array", "items": { "type": "string" }, "description": "Tags like 'seminar', 'workshop', 'fest'." },
-                "rsvps": { "type": "array", "items": { "type": "string" }, "description": "List of user IDs who have RSVP'd." }
+        "required": [
+          "eventId",
+          "userId",
+          "title",
+          "type",
+          "date",
+          "startTime",
+          "endTime"
+        ]
+      },
+      "activity": {
+        "title": "Activity",
+        "description": "Represents a college event like a seminar, workshop, or fest.",
+        "type": "object",
+        "properties": {
+          "activityId": {
+            "type": "string",
+            "description": "The unique ID for the activity."
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the activity."
+          },
+          "description": {
+            "type": "string",
+            "description": "A short description of the activity."
+          },
+          "location": {
+            "type": "string",
+            "description": "The location of the activity (e.g., 'Auditorium A')."
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The start date and time of the activity."
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The end date and time of the activity."
+          },
+          "organizer": {
+            "type": "string",
+            "description": "The name of the organizing person or group."
+          },
+          "imageUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "An optional image URL for the activity."
+          },
+          "link": {
+            "type": "string",
+            "format": "uri",
+            "description": "An optional external link for more information."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
             },
-            "required": ["activityId", "title", "location", "startDatetime", "endDatetime", "organizer"]
-        }
+            "description": "Tags for filtering (e.g., 'seminar', 'fest')."
+          },
+          "rsvps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of user IDs who have RSVP'd."
+          },
+          "attendees": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of user IDs who have added this to their timetable."
+          }
+        },
+        "required": [
+          "activityId",
+          "title",
+          "location",
+          "startTime",
+          "endTime",
+          "organizer"
+        ]
+      }
     },
     "auth": {
-        "providers": ["Google", "Email/Password"]
+      "providers": [
+        "Google",
+        "Email/Password"
+      ]
     },
     "firestore": {
-        "/users/{userId}": {
-            "schema": {
-                "$ref": "#/entities/userProfile"
-            },
-            "description": "Stores user profile information."
+      "/users/{userId}": {
+        "schema": {
+          "$ref": "#/entities/userProfile"
         },
-        "/calendarEvents/{eventId}": {
-            "schema": {
-                "$ref": "#/entities/calendarEvent"
-            },
-            "description": "Stores all calendar events for all users."
+        "description": "Stores user profile information."
+      },
+      "/calendarEvents/{eventId}": {
+        "schema": {
+          "$ref": "#/entities/calendarEvent"
         },
-        "/activities/{activityId}": {
-            "schema": { "$ref": "#/entities/activity" },
-            "description": "Stores all college activities and events."
-        }
+        "description": "Stores all calendar events for all users."
+      },
+      "/activities/{activityId}": {
+        "schema": {
+          "$ref": "#/entities/activity"
+        },
+        "description": "Stores all college-wide activities and events."
+      }
     }
-}
-    
+  }
+  
