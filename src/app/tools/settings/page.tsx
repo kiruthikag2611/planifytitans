@@ -1,6 +1,9 @@
 
 "use client"
 
+import * as React from "react"
+import { useTheme } from "next-themes"
+
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
@@ -12,6 +15,8 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export default function SettingsPage() {
+    const { theme, setTheme } = useTheme()
+
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center gap-4">
@@ -59,7 +64,7 @@ export default function SettingsPage() {
                         <CardContent className="space-y-6">
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="dark-mode">Theme</Label>
-                                <Select defaultValue="system">
+                                <Select value={theme} onValueChange={setTheme}>
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select theme" />
                                     </SelectTrigger>

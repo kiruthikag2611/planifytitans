@@ -19,6 +19,17 @@ import Image from "next/image";
 import { format, isToday, isFuture, isPast, formatDistanceToNow } from 'date-fns';
 import { Skeleton } from "@/components/ui/skeleton";
 
+/**
+ * Local extended Activity type to avoid TS errors while rebasing.
+ * It includes both possible field names used across branches.
+ */
+type ActivityWithTimes = Activity & {
+  startTime?: string | null;
+  endTime?: string | null;
+  startDatetime?: string | null;
+  endDatetime?: string | null;
+};
+
 const tasks = [
   {
     subject: "Math",
@@ -197,7 +208,7 @@ function TaskCard({ task }: { task: any }) {
 
 function ActivitiesView() {
   const firestore = useFirestore();
-  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<ActivityWithTimes | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const activitiesQuery = useMemo(() => {
@@ -205,9 +216,9 @@ function ActivitiesView() {
     return query(collection(firestore, 'activities'));
   }, [firestore]);
 
-  const { data: activities, loading } = useCollection<Activity>(activitiesQuery);
+  const { data: activities, loading } = useCollection<ActivityWithTimes>(activitiesQuery);
 
-  const handleActivityClick = (activity: Activity) => {
+  const handleActivityClick = (activity: ActivityWithTimes) => {
     setSelectedActivity(activity);
     setIsSheetOpen(true);
   };
@@ -269,7 +280,7 @@ function ActivitiesView() {
 }
 
 /* Rich ActivityCard used in ActivitiesView */
-function ActivityCard({ activity, onClick }: { activity: Activity, onClick: (activity: Activity) => void }) {
+function ActivityCard({ activity, onClick }: { activity: ActivityWithTimes, onClick: (activity: ActivityWithTimes) => void }) {
   const start = activity.startTime ?? activity.startDatetime;
   const end = activity.endTime ?? activity.endDatetime;
   const isOngoing = new Date() >= new Date(start || 0) && new Date() <= new Date(end || 0);
@@ -304,5 +315,3 @@ function ActivityCard({ activity, onClick }: { activity: Activity, onClick: (act
     </Card>
   );
 }
-
-
