@@ -31,11 +31,6 @@ export default function HelpCenterPage() {
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-              <Link href="/tools">
-                  <ArrowLeft className="h-5 w-5" />
-              </Link>
-          </Button>
           <div className="text-left">
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Help Center</h2>
               <p className="text-muted-foreground mt-1">How can we help you today?</p>

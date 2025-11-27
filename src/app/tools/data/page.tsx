@@ -10,11 +10,6 @@ export default function DataPage() {
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/tools">
-                        <ArrowLeft className="h-5 w-5" />
-                    </Link>
-                </Button>
                 <h2 className="text-xl sm:text-3xl font-bold tracking-tight">Data Import / Export</h2>
             </div>
 
