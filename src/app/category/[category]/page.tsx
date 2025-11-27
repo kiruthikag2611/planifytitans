@@ -35,7 +35,7 @@ export default function SubCategoryPage() {
       setSubCategory(sub.toLowerCase() as "student" | "professor" | "management");
     }
 
-    const nextPath = `/q/${category}/${sub.toLowerCase()}/0`;
+    const nextPath = `/onboarding/1`;
     router.push(nextPath);
   };
 
