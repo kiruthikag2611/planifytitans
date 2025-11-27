@@ -23,7 +23,7 @@ export function ActivityCard({ activity }: { activity: any }) {
             <div className="flex flex-col sm:flex-row">
                  {activity.imageUrl && (
                     <div className="w-full h-32 sm:w-48 sm:h-auto relative">
-                        <Image src={activity.imageUrl} alt={activity.title} layout="fill" objectFit="cover" />
+                        <Image src={activity.imageUrl} alt={activity.title} fill className="object-cover" />
                     </div>
                 )}
                 <div className="flex-1">
