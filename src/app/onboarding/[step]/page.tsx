@@ -19,7 +19,7 @@ import { useState } from 'react';
 export default function OnboardingPage() {
   const router = useRouter();
   const params = useParams();
-  const { getFormattedAnswers } = useQuestionnaire();
+  const { getFormattedAnswers, category, subCategory } = useQuestionnaire();
   const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const step = parseInt(Array.isArray(params.step) ? params.step[0] : params.step || '1', 10);
@@ -39,7 +39,7 @@ export default function OnboardingPage() {
       description: 'The AI is working its magic. This may take a few seconds.',
     });
     
-    const answers = getFormattedAnswers();
+    const answers = getFormattedAnswers(category, subCategory);
     
     try {
       const result = await generateSchedule(answers);
