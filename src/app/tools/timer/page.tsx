@@ -67,13 +67,6 @@ export default function FocusTimerPage() {
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 flex flex-col items-center">
-        <div className="w-full max-w-md relative mb-4">
-            <Button variant="ghost" size="icon" className="absolute top-0 left-0" asChild>
-                <Link href="/tools">
-                    <ArrowLeft className="h-5 w-5" />
-                </Link>
-            </Button>
-        </div>
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader>
           <CardTitle className="text-center text-2xl">Focus Timer</CardTitle>
