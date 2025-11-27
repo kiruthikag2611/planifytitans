@@ -4,10 +4,9 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import { addWeeks, format } from "date-fns";
 
 /**
- * Provider + types for the onboarding / questionnaire flow.
- * This file merges the branches: a compact variant + a richer variant.
- * It keeps the richer types but keeps them local to this file so
- * you can finish the rebase without touching global types.
+ * QuestionnaireProvider
+ * - Merged and cleaned version (no conflict markers)
+ * - Keeps richer types locally to avoid touching global type files during rebase
  */
 
 /* ------------------------
@@ -142,7 +141,7 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
         timezone: answers.timezone ?? "Asia/Kolkata",
         working_hours: answers.working_hours ?? defaultWorkingHours,
         preferred_study_times: answers.preferred_study_times ?? [],
-        // keep answers so downstream AI/logic can read more fields
+        // include answers so downstream AI/logic can read more fields
         ...answers,
       };
     }
@@ -225,4 +224,3 @@ export const useQuestionnaire = () => {
   }
   return context;
 };
-
