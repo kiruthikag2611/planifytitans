@@ -5,8 +5,8 @@ import { addWeeks, format } from "date-fns";
 
 /**
  * QuestionnaireProvider
- * - Merged and cleaned version (no conflict markers)
- * - Keeps richer types locally to avoid touching global type files during rebase
+ * - Clean, merged version — no conflict markers
+ * - Contains local richer types used by the onboarding flow
  */
 
 /* ------------------------
@@ -52,8 +52,8 @@ type OnboardingAnswers = {
   max_continuous_study_minutes: number;
   min_break_minutes: number;
   tasks: Task[];
-  activities: any[]; // TODO: tighten types later
-  avoid_times: any[]; // TODO: tighten types later
+  activities: any[]; // refine later
+  avoid_times: any[]; // refine later
   max_daily_study_minutes?: number;
   allow_auto_reschedule: boolean;
   notifications_default: number;
@@ -127,7 +127,7 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
   }, []);
 
   const getFormattedAnswers = () => {
-    // If no subCategory and not personal, return a minimal payload
+    // If not enough context, return minimal payload for safety
     if (!subCategory && category !== "personal") return null;
 
     const today = new Date();
@@ -141,12 +141,11 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
         timezone: answers.timezone ?? "Asia/Kolkata",
         working_hours: answers.working_hours ?? defaultWorkingHours,
         preferred_study_times: answers.preferred_study_times ?? [],
-        // include answers so downstream AI/logic can read more fields
         ...answers,
       };
     }
 
-    // Academics payload
+    // Academics base payload
     const basePayload: any = {
       category: "Academics",
       term_start,
@@ -163,6 +162,7 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
       },
     };
 
+    // Add subcategory-specific details
     switch (subCategory) {
       case "student":
         return {
@@ -224,3 +224,5 @@ export const useQuestionnaire = () => {
   }
   return context;
 };
+
+ 

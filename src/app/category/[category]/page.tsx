@@ -28,15 +28,12 @@ export default function SubCategoryPage() {
   }
 
   const handleSelect = (sub: string) => {
-    if (category === 'academics' || category === 'personal') {
-      setCategory(category);
-    }
-    
-    const subLower = sub.toLowerCase();
-    if (subLower === 'student' || subLower === 'professor' || subLower === 'management') {
-      setSubCategory(subLower as "student" | "professor" | "management");
-    }
+    const mainCategory = category as 'academics' | 'personal';
+    const subCategorySelection = sub.toLowerCase() as 'student' | 'professor' | 'management';
 
+    setCategory(mainCategory);
+    setSubCategory(subCategorySelection);
+    
     router.push(`/onboarding/1`);
   };
 
