@@ -12,27 +12,28 @@ import { EventForm } from "@/components/calendar/EventForm";
 import { useFirestore } from "@/firebase/provider";
 import { collection, query } from "firebase/firestore";
 import { useCollection } from "@/firebase/firestore/use-collection";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Activity } from "@/lib/types";
 import { ActivitySheet } from "@/components/calendar/ActivitySheet";
 import Image from "next/image";
 import { format, isToday, isFuture, isPast, formatDistanceToNow } from 'date-fns';
-import { Skeleton } from "@/components/ui/skeleton";
 
 /**
- * Local extended Activity type including both naming variants
- * so page.tsx can safely access startTime/endTime/startDatetime/endDatetime.
+ * Local extended Activity type to cover multiple field names used across branches.
+ * This prevents TS errors while you're finishing the rebase/merge.
  */
 type ActivityWithTimes = Activity & {
   startTime?: string | null;
   endTime?: string | null;
   startDatetime?: string | null;
   endDatetime?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
 };
 
-/* ------------------------------------------------------------
-   Static Sample Tasks
-------------------------------------------------------------- */
-
+/* ---------------------------------------------------
+   TASKS (dummy data)
+--------------------------------------------------- */
 const tasks = [
   {
     subject: "Math",
@@ -60,10 +61,9 @@ const tasks = [
   },
 ];
 
-/* ------------------------------------------------------------
-   Main Page Component
-------------------------------------------------------------- */
-
+/* ---------------------------------------------------
+   MAIN PAGE
+--------------------------------------------------- */
 export default function TasksAndActivitiesPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -74,15 +74,11 @@ export default function TasksAndActivitiesPage() {
 
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add New
-            </Button>
+            <Button><Plus className="mr-2 h-4 w-4" /> Add New</Button>
           </SheetTrigger>
 
           <SheetContent className="sm:max-w-lg">
-            <SheetHeader>
-              <SheetTitle>Add New Task or Activity</SheetTitle>
-            </SheetHeader>
+            <SheetHeader><SheetTitle>Add New Task or Activity</SheetTitle></SheetHeader>
             <EventForm onSave={() => setIsSheetOpen(false)} />
           </SheetContent>
         </Sheet>
@@ -101,10 +97,9 @@ export default function TasksAndActivitiesPage() {
   );
 }
 
-/* ------------------------------------------------------------
+/* ---------------------------------------------------
    TASKS SECTION
-------------------------------------------------------------- */
-
+--------------------------------------------------- */
 function TasksView() {
   return (
     <Tabs defaultValue="all" className="mt-4">
@@ -145,9 +140,7 @@ function TaskList({ tasks }: { tasks: any[] }) {
   }
   return (
     <div className="space-y-4 mt-4">
-      {tasks.map((task, index) => (
-        <TaskCard key={index} task={task} />
-      ))}
+      {tasks.map((task, index) => <TaskCard key={index} task={task} />)}
     </div>
   );
 }
@@ -174,16 +167,15 @@ function TaskCard({ task }: { task: any }) {
           <Badge variant={task.priority === "High" ? "destructive" : "secondary"}>{task.priority}</Badge>
         </div>
       </CardHeader>
+
       <CardContent className="space-y-3">
         <div className="flex items-center text-sm text-muted-foreground h-5">
           <Clock className="mr-2 h-4 w-4" />
-          {dueDate ? (
-            <span>{dueDate}</span>
-          ) : (
-            <div className="h-4 w-48 rounded-md bg-muted animate-pulse" />
-          )}
+          {dueDate ? <span>{dueDate}</span> : <div className="h-4 w-48 rounded-md bg-muted animate-pulse" />}
         </div>
+
         {task.progress > 0 && <Progress value={task.progress} />}
+
         <div className="flex items-center justify-end space-x-2 pt-2 border-t mt-2 -mb-2">
           <Button variant="ghost" size="sm"><Check className="mr-1 h-4 w-4" /> Mark Done</Button>
           <Button variant="ghost" size="sm"><Edit className="mr-1 h-4 w-4" /> Edit</Button>
@@ -193,10 +185,10 @@ function TaskCard({ task }: { task: any }) {
   );
 }
 
-/* ------------------------------------------------------------
+/* ---------------------------------------------------
    ACTIVITIES SECTION (Firestore)
-   - Uses ActivityWithTimes everywhere to avoid TS errors
-------------------------------------------------------------- */
+   - Uses ActivityWithTimes to avoid TS errors
+--------------------------------------------------- */
 
 function ActivitiesView() {
   const firestore = useFirestore();
@@ -215,12 +207,22 @@ function ActivitiesView() {
     setIsSheetOpen(true);
   };
 
+  const getStart = (a: ActivityWithTimes) => a.startTime ?? a.startDatetime ?? a.startDate ?? null;
+  const getEnd = (a: ActivityWithTimes) => a.endTime ?? a.endDatetime ?? a.endDate ?? null;
+
   const upcomingActivities = useMemo(
-    () => activities?.filter(a => isFuture(new Date(a.startTime ?? a.startDatetime ?? ''))) || [],
+    () => activities?.filter(a => {
+      const s = getStart(a);
+      return s ? isFuture(new Date(s)) : false;
+    }) || [],
     [activities]
   );
+
   const pastActivities = useMemo(
-    () => activities?.filter(a => isPast(new Date(a.startTime ?? a.startDatetime ?? ''))) || [],
+    () => activities?.filter(a => {
+      const s = getStart(a);
+      return s ? isPast(new Date(s)) : false;
+    }) || [],
     [activities]
   );
 
@@ -271,17 +273,19 @@ function ActivitiesView() {
   );
 }
 
-/* Rich ActivityCard used in ActivitiesView */
+/* ---------------------------------------------------
+   ActivityCard (uses ActivityWithTimes)
+--------------------------------------------------- */
 function ActivityCard({ activity, onClick }: { activity: ActivityWithTimes, onClick: (activity: ActivityWithTimes) => void }) {
-  const start = activity.startTime ?? activity.startDatetime;
-  const end = activity.endTime ?? activity.endDatetime;
+  const startRaw = activity.startTime ?? activity.startDatetime ?? activity.startDate ?? null;
+  const endRaw = activity.endTime ?? activity.endDatetime ?? activity.endDate ?? null;
 
-  const startDate = start ? new Date(start) : null;
-  const endDate = end ? new Date(end) : null;
+  const startDate = startRaw ? new Date(startRaw) : null;
+  const endDate = endRaw ? new Date(endRaw) : null;
 
   const now = new Date();
   const isOngoing = startDate && endDate ? now >= startDate && now <= endDate : false;
-  const badgeText = isOngoing ? 'Ongoing' : startDate ? (isToday(startDate) ? 'Today' : `in ${formatDistanceToNow(startDate)}`) : 'Date TBD';
+  const badgeText = isOngoing ? 'Ongoing' : (startDate ? (isToday(startDate) ? 'Today' : `in ${formatDistanceToNow(startDate)}`) : 'Date TBD');
 
   return (
     <Card className="hover:bg-accent/50 transition-all cursor-pointer" onClick={() => onClick(activity)}>
@@ -289,6 +293,7 @@ function ActivityCard({ activity, onClick }: { activity: ActivityWithTimes, onCl
         {activity.imageUrl && (
           <Image src={activity.imageUrl} alt={activity.title} width={80} height={80} className="rounded-md object-cover hidden sm:block" />
         )}
+
         <div className="flex-grow">
           <div className="flex justify-between items-start">
             <CardTitle className="text-lg mb-1">{activity.title}</CardTitle>
@@ -317,4 +322,4 @@ function ActivityCard({ activity, onClick }: { activity: ActivityWithTimes, onCl
   );
 }
 
-
+ 

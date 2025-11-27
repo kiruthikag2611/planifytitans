@@ -6,20 +6,12 @@ import type { ReactNode } from 'react';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
-export function Providers({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function Providers({ children }: { children: ReactNode }) {
   return (
     <FirebaseClientProvider>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <QuestionnaireProvider>
-          {children}
-        </QuestionnaireProvider>
+        <QuestionnaireProvider>{children}</QuestionnaireProvider>
       </ThemeProvider>
     </FirebaseClientProvider>
   );
 }
-
- 
