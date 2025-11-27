@@ -7,8 +7,6 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { generateSchedule } from '@/app/actions';
-import { useQuestionnaire } from '@/context/QuestionnaireProvider';
 
 type ScheduleEvent = {
   title: string;
@@ -31,35 +29,31 @@ const eventColorMapping: { [key: string]: string } = {
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
+const exampleSchedule: ScheduleEvent[] = [
+  { day: 'Monday', startTime: '09:00', endTime: '10:30', title: 'Calculus 101', type: 'Class', description: 'Room 201' },
+  { day: 'Monday', startTime: '11:00', endTime: '12:00', title: 'Physics Lab', type: 'Class', description: 'Lab A' },
+  { day: 'Monday', startTime: '14:00', endTime: '15:30', title: 'Study: Physics', type: 'Study Time', description: 'Prepare for quiz' },
+  { day: 'Tuesday', startTime: '10:00', endTime: '11:30', title: 'Intro to CS', type: 'Class', description: 'Room 305' },
+  { day: 'Tuesday', startTime: '13:00', endTime: '14:00', title: 'Group Project Meeting', type: 'Task', description: 'Discuss milestone 2' },
+  { day: 'Wednesday', startTime: '09:00', endTime: '10:30', title: 'Calculus 101', type: 'Class', description: 'Room 201' },
+  { day: 'Wednesday', startTime: '16:00', endTime: '17:00', title: 'Workout', type: 'Personal', description: 'Gym' },
+  { day: 'Thursday', startTime: '10:00', endTime: '11:30', title: 'Intro to CS', type: 'Class', description: 'Room 305' },
+  { day: 'Thursday', startTime: '15:00', endTime: '16:30', title: 'Assignment: Calculus', type: 'Assignment', description: 'Problem Set 3 due' },
+  { day: 'Friday', startTime: '09:00', endTime: '10:30', title: 'Calculus 101', type: 'Class', description: 'Room 201' },
+  { day: 'Friday', startTime: '13:00', endTime: '15:00', title: 'Exam: Physics Midterm', type: 'Exam', description: 'Main Hall' },
+  { day: 'Saturday', startTime: '10:00', endTime: '12:00', title: 'Review Week\'s Notes', type: 'Study Time', description: 'All subjects' },
+];
+
 export default function SchedulePage() {
   const router = useRouter();
   const [schedule, setSchedule] = useState<ScheduleEvent[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const { getFormattedAnswers } = useQuestionnaire();
 
   useEffect(() => {
-    const fetchSchedule = async () => {
-      setLoading(true);
-      try {
-        const answers = getFormattedAnswers('academics', 'student');
-        const result = await generateSchedule(answers);
-        
-        if (result.success && result.data?.schedule) {
-          setSchedule(result.data.schedule);
-        } else {
-          console.error("AI did not return a valid schedule:", result.error);
-          setSchedule([]);
-        }
-      } catch (e) {
-        console.error("Failed to generate schedule data", e);
-        setSchedule([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchSchedule();
-  }, [getFormattedAnswers]);
+    // Simulate fetching the schedule
+    setSchedule(exampleSchedule);
+    setLoading(false);
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -75,13 +69,12 @@ export default function SchedulePage() {
         {loading ? (
             <div className="flex items-center justify-center h-full">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="ml-4 text-muted-foreground">Generating your timetable...</p>
+                <p className="ml-4 text-muted-foreground">Loading your timetable...</p>
             </div>
         ) : !schedule || schedule.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-                <h2 className="text-2xl font-bold">Timetable Generation Failed</h2>
-                <p className="text-muted-foreground mt-2">The AI could not generate a schedule.</p>
-                <p className="text-muted-foreground">Please try again later or check the console for errors.</p>
+                <h2 className="text-2xl font-bold">No Schedule Found</h2>
+                <p className="text-muted-foreground mt-2">There was a problem loading your timetable.</p>
                 <Button onClick={() => window.location.reload()} className="mt-6">Try Again</Button>
             </div>
         ) : (
