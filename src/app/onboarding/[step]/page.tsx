@@ -43,15 +43,16 @@ export default function OnboardingPage() {
     
     try {
       const result = await generateSchedule(answers);
-      if (result.success && result.data) {
-        sessionStorage.setItem('scheduleData', JSON.stringify(result.data));
+      if (result.success && result.data?.schedule) {
+        // The AI result is nested, so we extract the schedule array
+        sessionStorage.setItem('scheduleData', JSON.stringify(result.data.schedule));
         toast({
           title: 'Timetable Generated!',
           description: 'Redirecting you to your new schedule.',
         });
         router.push('/schedule');
       } else {
-        throw new Error(result.error || 'Unknown error generating schedule.');
+        throw new Error(result.error || 'AI did not return a valid schedule.');
       }
     } catch (error) {
       console.error('Failed to generate schedule:', error);

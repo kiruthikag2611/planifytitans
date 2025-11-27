@@ -35,21 +35,21 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const data = sessionStorage.getItem('scheduleData');
-    if (data) {
-      try {
+    setLoading(true);
+    try {
+      const data = sessionStorage.getItem('scheduleData');
+      if (data) {
         const parsedData = JSON.parse(data);
-        // The AI response is nested under a 'data' object, which has a 'schedule' property
-        if (parsedData && parsedData.schedule && Array.isArray(parsedData.schedule)) {
-          setSchedule(parsedData.schedule);
-        } else if (parsedData && Array.isArray(parsedData)) { // Handle cases where it might be a direct array
+        if (Array.isArray(parsedData)) {
           setSchedule(parsedData);
         }
-      } catch (e) {
-        console.error("Failed to parse schedule data", e);
       }
+    } catch (e) {
+      console.error("Failed to parse schedule data from sessionStorage", e);
+      setSchedule(null); // Ensure schedule is cleared on error
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   return (
