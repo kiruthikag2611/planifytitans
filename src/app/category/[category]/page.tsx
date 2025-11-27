@@ -28,7 +28,6 @@ export default function SubCategoryPage() {
   }
 
   const handleSelect = (sub: string) => {
-    // Correctly set category and subCategory in the context
     if (category === 'academics' || category === 'personal') {
       setCategory(category);
     }
@@ -38,8 +37,7 @@ export default function SubCategoryPage() {
       setSubCategory(subLower as "student" | "professor" | "management");
     }
 
-    const nextPath = `/onboarding/1`;
-    router.push(nextPath);
+    router.push(`/onboarding/1`);
   };
 
   const options = subCategories[category as keyof typeof subCategories];
