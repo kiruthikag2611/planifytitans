@@ -1,9 +1,13 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
-import { Providers } from './providers';
-import { AppLayout } from '@/components/AppLayout';
+import { Inter, Poppins } from 'next/font/google';
 
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['600', '700', '800'],
+  variable: '--font-poppins',
+});
 
 export const metadata: Metadata = {
   title: 'Planify',
@@ -15,5 +19,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return children;
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} ${poppins.variable} font-body antialiased`}>
+        {children}
+      </body>
+    </html>
+  );
 }
