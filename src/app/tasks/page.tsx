@@ -305,3 +305,4 @@ function ActivityCard({ activity, onClick }: { activity: Activity, onClick: (act
   );
 }
 
+
