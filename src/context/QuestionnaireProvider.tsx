@@ -4,9 +4,11 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import { addWeeks, format } from "date-fns";
 
 /**
- * QuestionnaireProvider
- * - Clean, merged version — no conflict markers
- * - Contains local richer types used by the onboarding flow
+ * QuestionnaireProvider - cleaned final version
+ *
+ * - No merge markers
+ * - No duplicate declarations
+ * - Types and provider shape are consolidated
  */
 
 /* ------------------------
@@ -52,8 +54,8 @@ type OnboardingAnswers = {
   max_continuous_study_minutes: number;
   min_break_minutes: number;
   tasks: Task[];
-  activities: any[]; // refine later
-  avoid_times: any[]; // refine later
+  activities: any[];
+  avoid_times: any[];
   max_daily_study_minutes?: number;
   allow_auto_reschedule: boolean;
   notifications_default: number;

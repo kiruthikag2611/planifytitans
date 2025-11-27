@@ -5,18 +5,13 @@ import { Sidebar, SidebarInset, SidebarProvider } from './ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { Toaster } from './ui/toaster';
 import { Header } from './Header';
-import { QuestionnaireProvider } from '@/context/QuestionnaireProvider';
-
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // Pages that should not have the main app sidebar
   const noSidebarPaths = ['/', '/login'];
   
-  const isNoSidebarPage = noSidebarPaths.includes(pathname) || 
-                          pathname.startsWith('/category') || 
-                          pathname.startsWith('/onboarding') ||
-                          pathname.startsWith('/schedule');
+  const isNoSidebarPage = noSidebarPaths.includes(pathname);
 
   if (isNoSidebarPage) {
     // For auth and onboarding pages, render children directly without the main app layout.
@@ -27,6 +22,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </>
     );
   }
+  
+  // For timetable page, we want a different layout
+  if (pathname.startsWith('/schedule')) {
+     return (
+        <>
+            {children}
+            <Toaster />
+        </>
+    );
+  }
+
 
   // For all other pages, use the standard layout with the sidebar.
   return (

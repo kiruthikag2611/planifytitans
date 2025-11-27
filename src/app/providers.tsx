@@ -1,3 +1,4 @@
+// src/app/providers.tsx
 'use client';
 
 import { QuestionnaireProvider } from '@/context/QuestionnaireProvider';
@@ -7,20 +8,25 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 
 /**
- * If you use next-intl in your project, uncomment the import and the NextIntlClientProvider
- * lines below. You previously had a TS error "Cannot find module 'next-intl'".
+ * Providers wrapper
  *
- * Install it first if needed:
+ * - children is required (ReactNode)
+ * - locale and messages are optional and only needed if you enable next-intl
+ *
+ * If you want next-intl enabled, install it and uncomment the NextIntlClientProvider import
+ * and the wrapper below.
+ *
  *   npm install next-intl
  *
- * Then uncomment:
- *
-// import { NextIntlClientProvider } from 'next-intl';
+ * Then uncomment the lines that reference NextIntlClientProvider.
  */
+
+/* Uncomment if you install next-intl
+import { NextIntlClientProvider } from 'next-intl';
+*/
 
 export function Providers({
   children,
-  // locale and messages are optional — only needed if you enable NextIntlClientProvider
   locale,
   messages,
 }: {
@@ -28,9 +34,9 @@ export function Providers({
   locale?: string;
   messages?: any;
 }) {
-  // If you enable NextIntlClientProvider, wrap the content with it and pass locale/messages.
-  // For now we return the provider tree without next-intl to avoid TS errors when the package
-  // is not installed.
+  // If you enable next-intl in your project, wrap the returned tree with
+  // NextIntlClientProvider and pass locale/messages. For now we avoid that
+  // to prevent TS errors if the package isn't installed.
   return (
     <FirebaseClientProvider>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -40,7 +46,7 @@ export function Providers({
   );
 }
 
-/* Example with next-intl (uncomment when next-intl is installed)
+/* Example with next-intl (uncomment the import and this function if you install next-intl)
 export function Providers({
   children,
   locale,

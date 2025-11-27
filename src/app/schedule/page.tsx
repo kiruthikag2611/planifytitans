@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import { generateSchedule } from '@/app/actions';
+import { useQuestionnaire } from '@/context/QuestionnaireProvider';
 
 type ScheduleEvent = {
   title: string;
@@ -33,24 +35,31 @@ export default function SchedulePage() {
   const router = useRouter();
   const [schedule, setSchedule] = useState<ScheduleEvent[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const { getFormattedAnswers } = useQuestionnaire();
 
   useEffect(() => {
-    setLoading(true);
-    try {
-      const data = sessionStorage.getItem('scheduleData');
-      if (data) {
-        const parsedData = JSON.parse(data);
-        if (Array.isArray(parsedData)) {
-          setSchedule(parsedData);
+    const fetchSchedule = async () => {
+      setLoading(true);
+      try {
+        const answers = getFormattedAnswers('academics', 'student');
+        const result = await generateSchedule(answers);
+        
+        if (result.success && result.data?.schedule) {
+          setSchedule(result.data.schedule);
+        } else {
+          console.error("AI did not return a valid schedule:", result.error);
+          setSchedule([]);
         }
+      } catch (e) {
+        console.error("Failed to generate schedule data", e);
+        setSchedule([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (e) {
-      console.error("Failed to parse schedule data from sessionStorage", e);
-      setSchedule(null); // Ensure schedule is cleared on error
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    };
+    
+    fetchSchedule();
+  }, [getFormattedAnswers]);
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -66,14 +75,14 @@ export default function SchedulePage() {
         {loading ? (
             <div className="flex items-center justify-center h-full">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="ml-4 text-muted-foreground">Loading your timetable...</p>
+                <p className="ml-4 text-muted-foreground">Generating your timetable...</p>
             </div>
         ) : !schedule || schedule.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
-                <h2 className="text-2xl font-bold">Nothing to see here... yet!</h2>
-                <p className="text-muted-foreground mt-2">Your AI-generated timetable is empty.</p>
-                <p className="text-muted-foreground">This can happen if no classes or tasks were provided during onboarding.</p>
-                <Button onClick={() => router.push('/onboarding/1')} className="mt-6">Start Onboarding</Button>
+                <h2 className="text-2xl font-bold">Timetable Generation Failed</h2>
+                <p className="text-muted-foreground mt-2">The AI could not generate a schedule.</p>
+                <p className="text-muted-foreground">Please try again later or check the console for errors.</p>
+                <Button onClick={() => window.location.reload()} className="mt-6">Try Again</Button>
             </div>
         ) : (
             <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-x-1 sm:gap-x-2 min-w-[800px]">
@@ -102,10 +111,8 @@ export default function SchedulePage() {
                     const [startHour, startMinute] = event.startTime.split(':').map(Number);
                     const [endHour, endMinute] = event.endTime.split(':').map(Number);
                     
-                    // Calculate positions based on a 7am to 9pm (14 hour) grid with 30-min increments (total 28 rows + header)
-                    // Each hour is 2rem * 2 = 4rem high
-                    const top = (startHour - 7 + startMinute / 60) * 4; // in rem
-                    const height = ((endHour + endMinute / 60) - (startHour + startMinute / 60)) * 4; // in rem
+                    const top = (startHour - 7 + startMinute / 60) * 4; 
+                    const height = ((endHour + endMinute / 60) - (startHour + startMinute / 60)) * 4;
 
                     return (
                         <Card
@@ -115,7 +122,7 @@ export default function SchedulePage() {
                                 eventColorMapping[event.type] || eventColorMapping.Custom
                             )}
                             style={{
-                                top: `calc(3rem + ${top}rem)`, // 3rem offset for the day header
+                                top: `calc(3rem + ${top}rem)`,
                                 height: `${height}rem`,
                                 minHeight: '2rem'
                             }}
