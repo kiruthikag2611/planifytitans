@@ -5,6 +5,7 @@ import { Sidebar, SidebarInset, SidebarProvider } from './ui/sidebar';
 import { AppSidebar } from './AppSidebar';
 import { Toaster } from './ui/toaster';
 import { Header } from './Header';
+import { QuestionnaireProvider } from '@/context/QuestionnaireProvider';
 
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   
   const isNoSidebarPage = noSidebarPaths.includes(pathname) || 
                           pathname.startsWith('/category') || 
-                          pathname.startsWith('/q') ||
+                          pathname.startsWith('/onboarding') ||
                           pathname.startsWith('/schedule');
 
   if (isNoSidebarPage) {
