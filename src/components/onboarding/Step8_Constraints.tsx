@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Input } from '@/components/ui/input';
 import { Switch } from '../ui/switch';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
+import { Loader2 } from 'lucide-react';
 
 const FormSchema = z.object({
   allow_auto_reschedule: z.boolean(),
@@ -17,7 +18,7 @@ const FormSchema = z.object({
   // `avoid_times` would be more complex, skipping for this UI example
 });
 
-export function Step8_Constraints({ onFinish }: { onFinish: () => void }) {
+export function Step8_Constraints({ onFinish, isGenerating }: { onFinish: () => void; isGenerating: boolean }) {
   const { answers, updateAnswers } = useQuestionnaire();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -81,7 +82,10 @@ export function Step8_Constraints({ onFinish }: { onFinish: () => void }) {
         />
 
         <div className="flex justify-end pt-8">
-            <Button type="submit" size="lg">Generate my timetable</Button>
+            <Button type="submit" size="lg" disabled={isGenerating}>
+                 {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Generate my timetable
+            </Button>
         </div>
       </form>
     </Form>

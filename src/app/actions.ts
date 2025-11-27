@@ -28,3 +28,13 @@ export async function optimizeSchedule(data: SuggestScheduleOptimizationsInput) 
     return { success: false, error: `Failed to optimize schedule: ${errorMessage}` };
   }
 }
+
+export async function generateSchedule(data: PersonalizedScheduleGenerationInput) {
+  try {
+    const result = await generatePersonalizedSchedule(data);
+    return { success: true, data: result };
+  } catch (error: any) {
+    console.error('[generateSchedule Action Error]', error);
+    return { success: false, error: error.message || 'Failed to generate schedule via AI.' };
+  }
+}
