@@ -20,8 +20,8 @@ export function Step2_TermDates({ onNext }: { onNext: () => void }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      term_start: answers.term_start,
-      term_end: answers.term_end,
+      term_start: answers.term_start || '',
+      term_end: answers.term_end || '',
     },
   });
 

@@ -40,7 +40,7 @@ export function Step3_Classes({ onNext }: { onNext: () => void }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      classes: answers.classes,
+      classes: answers.classes?.map(c => ({...c, location: c.location || ''})) || [],
     },
   });
   
@@ -59,7 +59,7 @@ export function Step3_Classes({ onNext }: { onNext: () => void }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="flex justify-between items-center">
             <h2 className="text-lg font-semibold">What are your regular classes?</h2>
-            <Button type="button" size="sm" onClick={() => append({ id: `class_${Date.now()}`, title: '', days: [], startTime: '', endTime: '', priority: 5, fixed: true })}>
+            <Button type="button" size="sm" onClick={() => append({ id: `class_${Date.now()}`, title: '', days: [], startTime: '', endTime: '', location: '', priority: 5, fixed: true })}>
                 <Plus className="mr-2 h-4 w-4" /> Add Class
             </Button>
         </div>
@@ -98,6 +98,17 @@ export function Step3_Classes({ onNext }: { onNext: () => void }) {
                             )}
                         />
                     </div>
+                     <FormField
+                        control={form.control}
+                        name={`classes.${index}.location`}
+                        render={({ field }) => (
+                            <FormItem className="mt-4">
+                            <FormLabel>Location (optional)</FormLabel>
+                            <FormControl><Input placeholder="e.g. Room 201" {...field} /></FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                     <FormField
                         control={form.control}
                         name={`classes.${index}.days`}
