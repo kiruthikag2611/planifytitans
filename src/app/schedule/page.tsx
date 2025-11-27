@@ -1,12 +1,11 @@
 
 'use client';
 
-import { Download } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useQuestionnaire } from '@/context/QuestionnaireProvider';
 import { useRouter } from 'next/navigation';
 
 type ScheduleEvent = {
@@ -29,44 +28,29 @@ const eventColorMapping: { [key: string]: string } = {
 };
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const hours = Array.from({ length: 14 }, (_, i) => `${(i + 7).toString().padStart(2, '0')}:00`); // 7 AM to 8 PM
 
 export default function SchedulePage() {
   const router = useRouter();
-  const { category, subCategory, answers } = useQuestionnaire();
   const [schedule, setSchedule] = useState<ScheduleEvent[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const data = sessionStorage.getItem('scheduleData');
     if (data) {
       try {
         const parsedData = JSON.parse(data);
-        if (parsedData && Array.isArray(parsedData.schedule)) {
+        // The AI response is nested under a 'data' object, which has a 'schedule' property
+        if (parsedData && parsedData.schedule && Array.isArray(parsedData.schedule)) {
           setSchedule(parsedData.schedule);
+        } else if (parsedData && Array.isArray(parsedData)) { // Handle cases where it might be a direct array
+          setSchedule(parsedData);
         }
       } catch (e) {
         console.error("Failed to parse schedule data", e);
       }
     }
+    setLoading(false);
   }, []);
-  
-  const lastQuestionIndex = Object.keys(answers).length - 1;
-  const backLink = `/q/${category}/${subCategory}/${lastQuestionIndex >= 0 ? lastQuestionIndex : 0}`;
-
-
-  const getEventStyle = (event: ScheduleEvent) => {
-    const [startHour, startMinute] = event.startTime.split(':').map(Number);
-    const [endHour, endMinute] = event.endTime.split(':').map(Number);
-    
-    // Adjust for grid starting at 7 AM
-    const top = (startHour - 7 + startMinute / 60);
-    const height = ((endHour + endMinute / 60) - (startHour + startMinute / 60));
-
-    return {
-        gridRowStart: Math.max(1, Math.floor(top * 2) + 1), // Assuming 30-min increments in grid
-        gridRowEnd: Math.max(2, Math.ceil((top + height) * 2) + 1),
-    };
-  };
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -79,56 +63,73 @@ export default function SchedulePage() {
       </header>
 
       <main className="flex-1 overflow-auto p-2 sm:p-4">
-        <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-x-1 sm:gap-x-2 min-w-[800px]">
-          {/* Time column */}
-          <div className="grid grid-rows-[3rem_repeat(28,2rem)] text-right">
-            <div/>
-            {Array.from({ length: 14 * 2 }).map((_, i) => (
-                <div key={i} className="text-xs text-muted-foreground pr-2 -translate-y-2">
-                    {i % 2 === 0 ? `${(Math.floor(i / 2) + 7).toString().padStart(2, '0')}:00` : ''}
+        {loading ? (
+            <div className="flex items-center justify-center h-full">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <p className="ml-4 text-muted-foreground">Loading your timetable...</p>
+            </div>
+        ) : !schedule || schedule.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+                <h2 className="text-2xl font-bold">Nothing to see here... yet!</h2>
+                <p className="text-muted-foreground mt-2">Your AI-generated timetable is empty.</p>
+                <p className="text-muted-foreground">This can happen if no classes or tasks were provided during onboarding.</p>
+                <Button onClick={() => router.push('/onboarding/1')} className="mt-6">Start Onboarding</Button>
+            </div>
+        ) : (
+            <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-x-1 sm:gap-x-2 min-w-[800px]">
+            {/* Time column */}
+            <div className="grid grid-rows-[3rem_repeat(28,2rem)] text-right">
+                <div/>
+                {Array.from({ length: 14 * 2 }).map((_, i) => (
+                    <div key={i} className="text-xs text-muted-foreground pr-2 -translate-y-2">
+                        {i % 2 === 0 ? `${(Math.floor(i / 2) + 7).toString().padStart(2, '0')}:00` : ''}
+                    </div>
+                ))}
+            </div>
+
+            {/* Day columns */}
+            {daysOfWeek.map((day) => (
+                <div key={day} className="relative grid grid-rows-[3rem_repeat(28,2rem)]">
+                <div className="text-center font-semibold sticky top-0 bg-background py-2 text-sm sm:text-base z-10">{day}</div>
+                
+                {/* Grid lines */}
+                {Array.from({ length: 14 * 2 + 1 }).map((_, i) => (
+                    <div key={i} className="h-full border-b border-dashed"></div>
+                ))}
+
+                {/* Events */}
+                {schedule?.filter(e => e.day === day).map((event, eventIndex) => {
+                    const [startHour, startMinute] = event.startTime.split(':').map(Number);
+                    const [endHour, endMinute] = event.endTime.split(':').map(Number);
+                    
+                    // Calculate positions based on a 7am to 9pm (14 hour) grid with 30-min increments (total 28 rows + header)
+                    // Each hour is 2rem * 2 = 4rem high
+                    const top = (startHour - 7 + startMinute / 60) * 4; // in rem
+                    const height = ((endHour + endMinute / 60) - (startHour + startMinute / 60)) * 4; // in rem
+
+                    return (
+                        <Card
+                            key={eventIndex}
+                            className={cn(
+                                'absolute w-[95%] left-1/2 -translate-x-1/2 p-2 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg text-xs',
+                                eventColorMapping[event.type] || eventColorMapping.Custom
+                            )}
+                            style={{
+                                top: `calc(3rem + ${top}rem)`, // 3rem offset for the day header
+                                height: `${height}rem`,
+                                minHeight: '2rem'
+                            }}
+                        >
+                            <p className="font-bold truncate">{event.title}</p>
+                            <p className="truncate text-[10px]">{event.startTime} - {event.endTime}</p>
+                            {event.description && <p className="truncate text-muted-foreground text-[10px]">{event.description}</p>}
+                        </Card>
+                    )
+                })}
                 </div>
             ))}
-          </div>
-
-          {/* Day columns */}
-          {daysOfWeek.map((day, dayIndex) => (
-            <div key={day} className="relative grid grid-rows-[3rem_repeat(28,2rem)]">
-              <div className="text-center font-semibold sticky top-0 bg-background py-2 text-sm sm:text-base">{day}</div>
-              
-              {/* Grid lines */}
-              {Array.from({ length: 14 * 2 + 1 }).map((_, i) => (
-                <div key={i} className="h-full border-b border-dashed"></div>
-              ))}
-
-              {/* Events */}
-              {schedule?.filter(e => e.day === day).map((event, eventIndex) => {
-                 const [startHour, startMinute] = event.startTime.split(':').map(Number);
-                 const [endHour, endMinute] = event.endTime.split(':').map(Number);
-                 
-                 const start = (startHour - 7) * 48 + startMinute * 0.8;
-                 const duration = ((endHour + endMinute/60) - (startHour + startMinute/60)) * 48;
-
-                return (
-                    <Card
-                        key={eventIndex}
-                        className={cn(
-                            'absolute w-[95%] left-1/2 -translate-x-1/2 p-2 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg text-xs',
-                             eventColorMapping[event.type] || eventColorMapping.Custom
-                        )}
-                        style={{
-                            top: `${start + 48}px`, // 48px offset for header
-                            height: `${duration}px`,
-                        }}
-                    >
-                        <p className="font-bold truncate">{event.title}</p>
-                        <p className="truncate text-[10px]">{event.startTime} - {event.endTime}</p>
-                        {event.description && <p className="truncate text-muted-foreground text-[10px]">{event.description}</p>}
-                    </Card>
-                )
-              })}
             </div>
-          ))}
-        </div>
+        )}
       </main>
     </div>
   );
