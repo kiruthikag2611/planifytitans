@@ -4,15 +4,14 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import { addWeeks, format } from "date-fns";
 
 /**
- * QuestionnaireProvider - cleaned final version
- *
+ * Clean QuestionnaireProvider
  * - No merge markers
- * - No duplicate declarations
- * - Types and provider shape are consolidated
+ * - No duplicate types
+ * - Includes avoid_times in the shape to match usage
  */
 
 /* ------------------------
-   Local types
+   Types
    ------------------------ */
 
 type Category = "academics" | "personal" | null;
@@ -43,6 +42,13 @@ type WorkingHours = {
   [key: string]: { start: string; end: string } | null;
 };
 
+type AvoidTime = {
+  day: string;
+  start: string;
+  end: string;
+  reason?: string;
+};
+
 type OnboardingAnswers = {
   timezone: string;
   term_start?: string;
@@ -55,7 +61,7 @@ type OnboardingAnswers = {
   min_break_minutes: number;
   tasks: Task[];
   activities: any[];
-  avoid_times: any[];
+  avoid_times: AvoidTime[];
   max_daily_study_minutes?: number;
   allow_auto_reschedule: boolean;
   notifications_default: number;
@@ -129,7 +135,7 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
   }, []);
 
   const getFormattedAnswers = () => {
-    // If not enough context, return minimal payload for safety
+    // safety: require minimal context for academics, allow personal
     if (!subCategory && category !== "personal") return null;
 
     const today = new Date();
@@ -143,11 +149,11 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
         timezone: answers.timezone ?? "Asia/Kolkata",
         working_hours: answers.working_hours ?? defaultWorkingHours,
         preferred_study_times: answers.preferred_study_times ?? [],
+        avoid_times: answers.avoid_times ?? [],
         ...answers,
       };
     }
 
-    // Academics base payload
     const basePayload: any = {
       category: "Academics",
       term_start,
@@ -155,6 +161,7 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
       timezone: answers.timezone ?? "Asia/Kolkata",
       classes: answers.classes ?? [],
       tasks: answers.tasks ?? [],
+      avoid_times: answers.avoid_times ?? [],
       preferences: {
         studyTimes: answers.preferred_study_times ?? [],
         blockSizes: answers.study_block_sizes ?? [],
@@ -164,14 +171,11 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
       },
     };
 
-    // Add subcategory-specific details
     switch (subCategory) {
       case "student":
         return {
           ...basePayload,
           subCategory: "Student",
-          collegeName: (answers as any).collegeName ?? undefined,
-          department: (answers as any).department ?? undefined,
           scheduleDetails: {
             classes: answers.classes,
             tasks: answers.tasks,
@@ -181,21 +185,18 @@ export const QuestionnaireProvider = ({ children }: { children: ReactNode }) => 
             },
           },
         };
-
       case "professor":
         return {
           ...basePayload,
           subCategory: "Professor",
           officeHours: (answers as any).officeHours ?? undefined,
         };
-
       case "management":
         return {
           ...basePayload,
           subCategory: "Management",
           responsibilities: (answers as any).responsibilities ?? undefined,
         };
-
       default:
         return basePayload;
     }
