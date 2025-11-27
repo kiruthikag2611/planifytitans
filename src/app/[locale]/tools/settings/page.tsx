@@ -3,6 +3,8 @@
 
 import * as React from "react"
 import { useTheme } from "next-themes"
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter, usePathname } from "next/navigation";
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
@@ -15,12 +17,23 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export default function SettingsPage() {
-    const { theme, setTheme } = useTheme()
+    const t = useTranslations('SettingsPage');
+    const { theme, setTheme } = useTheme();
+    const [isPending, startTransition] = React.useTransition();
+    const router = useRouter();
+    const pathname = usePathname();
+    const locale = useLocale();
+
+    function onSelectLanguage(nextLocale: string) {
+        startTransition(() => {
+            router.replace(`/${nextLocale}${pathname}`);
+        });
+    }
 
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center gap-4">
-                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Settings</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">{t('title')}</h2>
             </div>
            
 
@@ -28,28 +41,28 @@ export default function SettingsPage() {
                 <div className="md:col-span-2 grid gap-8">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Profile</CardTitle>
-                            <CardDescription>Manage your personal information.</CardDescription>
+                            <CardTitle>{t('profileTitle')}</CardTitle>
+                            <CardDescription>{t('profileDescription')}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">{t('nameLabel')}</Label>
                                 <Input id="name" defaultValue="Alex Doe" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email">{t('emailLabel')}</Label>
                                 <Input id="email" type="email" defaultValue="alex.doe@example.com" />
                             </div>
                              <div className="space-y-2">
-                                <Label htmlFor="role">Role</Label>
+                                <Label htmlFor="role">{t('roleLabel')}</Label>
                                 <Select defaultValue="student">
                                     <SelectTrigger id="role">
                                         <SelectValue placeholder="Select role" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="student">Student</SelectItem>
-                                        <SelectItem value="professor">Professor</SelectItem>
-                                        <SelectItem value="management">Management</SelectItem>
+                                        <SelectItem value="student">{t('roleStudent')}</SelectItem>
+                                        <SelectItem value="professor">{t('roleProfessor')}</SelectItem>
+                                        <SelectItem value="management">{t('roleManagement')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -58,26 +71,26 @@ export default function SettingsPage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>App Appearance</CardTitle>
-                            <CardDescription>Customize the look and feel of the app.</CardDescription>
+                            <CardTitle>{t('appearanceTitle')}</CardTitle>
+                            <CardDescription>{t('appearanceDescription')}</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="dark-mode">Theme</Label>
+                                <Label htmlFor="dark-mode">{t('themeLabel')}</Label>
                                 <Select value={theme} onValueChange={setTheme}>
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select theme" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="light">Light</SelectItem>
-                                        <SelectItem value="dark">Dark</SelectItem>
-                                        <SelectItem value="system">System</SelectItem>
+                                        <SelectItem value="light">{t('themeLight')}</SelectItem>
+                                        <SelectItem value="dark">{t('themeDark')}</SelectItem>
+                                        <SelectItem value="system">{t('themeSystem')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="language">Language</Label>
-                                <Select defaultValue="en">
+                                <Label htmlFor="language">{t('languageLabel')}</Label>
+                                <Select defaultValue={locale} onValueChange={onSelectLanguage}>
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select language" />
                                     </SelectTrigger>
@@ -89,14 +102,14 @@ export default function SettingsPage() {
                                 </Select>
                             </div>
                              <div className="flex items-center justify-between">
-                                <Label htmlFor="time-format">Time Format</Label>
+                                <Label htmlFor="time-format">{t('timeFormatLabel')}</Label>
                                 <Select defaultValue="12h">
                                     <SelectTrigger className="w-[180px]">
                                         <SelectValue placeholder="Select format" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="12h">12-hour</SelectItem>
-                                        <SelectItem value="24h">24-hour</SelectItem>
+                                        <SelectItem value="12h">{t('timeFormat12')}</SelectItem>
+                                        <SelectItem value="24h">{t('timeFormat24')}</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -107,21 +120,21 @@ export default function SettingsPage() {
                 <div className="space-y-8">
                      <Card>
                         <CardHeader>
-                            <CardTitle>Privacy & Data</CardTitle>
+                            <CardTitle>{t('privacyTitle')}</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                           <Button variant="outline" className="w-full">Export Personal Data</Button>
-                           <Button variant="destructive" className="w-full">Delete Account</Button>
+                           <Button variant="outline" className="w-full">{t('exportDataButton')}</Button>
+                           <Button variant="destructive" className="w-full">{t('deleteAccountButton')}</Button>
                         </CardContent>
                     </Card>
 
                      <Card>
                         <CardHeader>
-                            <CardTitle>App Reset</CardTitle>
+                            <CardTitle>{t('resetTitle')}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                           <Button variant="destructive" className="w-full">Reset App Data</Button>
-                           <p className="text-xs text-muted-foreground mt-2">This will clear all your local settings, tasks, and schedules. This action cannot be undone.</p>
+                           <Button variant="destructive" className="w-full">{t('resetButton')}</Button>
+                           <p className="text-xs text-muted-foreground mt-2">{t('resetDescription')}</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -129,7 +142,7 @@ export default function SettingsPage() {
             </div>
             
             <div className="flex justify-end pt-4">
-                <Button>Save All Changes</Button>
+                <Button>{t('saveButton')}</Button>
             </div>
         </div>
     )

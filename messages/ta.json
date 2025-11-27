@@ -1,0 +1,30 @@
+{
+  "SettingsPage": {
+    "title": "அமைப்புகள்",
+    "profileTitle": "சுயவிவரம்",
+    "profileDescription": "உங்கள் தனிப்பட்ட தகவல்களை நிர்வகிக்கவும்.",
+    "nameLabel": "பெயர்",
+    "emailLabel": "மின்னஞ்சல்",
+    "roleLabel": "பங்கு",
+    "roleStudent": "மாணவர்",
+    "roleProfessor": "பேராசிரியர்",
+    "roleManagement": "நிர்வாகம்",
+    "appearanceTitle": "பயன்பாட்டின் தோற்றம்",
+    "appearanceDescription": "பயன்பாத்தின் தோற்றத்தையும் உணர்வையும் தனிப்பயனாக்குங்கள்.",
+    "themeLabel": "தீம்",
+    "themeLight": "ஒளி",
+    "themeDark": "இருண்ட",
+    "themeSystem": "கணினி",
+    "languageLabel": "மொழி",
+    "timeFormatLabel": "நேர வடிவம்",
+    "timeFormat12": "12-மணி நேரம்",
+    "timeFormat24": "24-மணி நேரம்",
+    "privacyTitle": "தனியுரிமை & தரவு",
+    "exportDataButton": "தனிப்பட்ட தரவை ஏற்றுமதி செய்",
+    "deleteAccountButton": "கணக்கை நீக்கு",
+    "resetTitle": "பயன்பாட்டை மீட்டமை",
+    "resetButton": "பயன்பாட்டுத் தரவை மீட்டமை",
+    "resetDescription": "இது உங்கள் உள்ளூர் அமைப்புகள், பணிகள் మరియు அட்டவணைகள் அனைத்தையும் அழித்துவிடும். இந்த செயலைச் செயல்தவிர்க்க முடியாது.",
+    "saveButton": "அனைத்து மாற்றங்களையும் சேமி"
+  }
+}

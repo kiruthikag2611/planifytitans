@@ -1,0 +1,30 @@
+{
+  "SettingsPage": {
+    "title": "सेटिंग्स",
+    "profileTitle": "प्रोफ़ाइल",
+    "profileDescription": "अपनी व्यक्तिगत जानकारी प्रबंधित करें।",
+    "nameLabel": "नाम",
+    "emailLabel": "ईमेल",
+    "roleLabel": "भूमिका",
+    "roleStudent": "छात्र",
+    "roleProfessor": "प्रोफेसर",
+    "roleManagement": "प्रबंधन",
+    "appearanceTitle": "ऐप प्रकटन",
+    "appearanceDescription": "ऐप के रंग-रूप को अनुकूलित करें।",
+    "themeLabel": "थीम",
+    "themeLight": "light",
+    "themeDark": "डार्क",
+    "themeSystem": "सिस्टम",
+    "languageLabel": "भाषा",
+    "timeFormatLabel": "समय प्रारूप",
+    "timeFormat12": "12-घंटे",
+    "timeFormat24": "24-घंटे",
+    "privacyTitle": "गोपनीयता और डेटा",
+    "exportDataButton": "व्यक्तिगत डेटा निर्यात करें",
+    "deleteAccountButton": "अकाउंट डिलीट करें",
+    "resetTitle": "ऐप रीसेट",
+    "resetButton": "ऐप डेटा रीसेट करें",
+    "resetDescription": "यह आपकी सभी स्थानीय सेटिंग्स, कार्यों और शेड्यूल को साफ़ कर देगा। इस क्रिया को पूर्ववत् नहीं किया जा सकता।",
+    "saveButton": "सभी परिवर्तन सहेजें"
+  }
+}

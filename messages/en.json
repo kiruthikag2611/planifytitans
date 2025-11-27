@@ -1,0 +1,30 @@
+{
+  "SettingsPage": {
+    "title": "Settings",
+    "profileTitle": "Profile",
+    "profileDescription": "Manage your personal information.",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "roleLabel": "Role",
+    "roleStudent": "Student",
+    "roleProfessor": "Professor",
+    "roleManagement": "Management",
+    "appearanceTitle": "App Appearance",
+    "appearanceDescription": "Customize the look and feel of the app.",
+    "themeLabel": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "languageLabel": "Language",
+    "timeFormatLabel": "Time Format",
+    "timeFormat12": "12-hour",
+    "timeFormat24": "24-hour",
+    "privacyTitle": "Privacy & Data",
+    "exportDataButton": "Export Personal Data",
+    "deleteAccountButton": "Delete Account",
+    "resetTitle": "App Reset",
+    "resetButton": "Reset App Data",
+    "resetDescription": "This will clear all your local settings, tasks, and schedules. This action cannot be undone.",
+    "saveButton": "Save All Changes"
+  }
+}

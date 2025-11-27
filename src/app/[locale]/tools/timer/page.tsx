@@ -114,8 +114,7 @@ export default function FocusTimerPage() {
         </CardContent>
          <CardFooter className="flex-col gap-4">
             <div className="w-full text-center">
-                <p className="text-sm text-muted-foreground">You studied 45 mins today</p>
-                <Progress value={30} className="mt-2" />
+                <p className="text-sm text-muted-foreground">You studied 45 mins today</p>                <Progress value={30} className="mt-2" />
             </div>
         </CardFooter>
       </Card>
