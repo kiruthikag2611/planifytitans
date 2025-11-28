@@ -1,170 +1,83 @@
-
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import {
-  Home,
-  LayoutDashboard,
-  Calendar,
-  ClipboardList,
-  Wrench,
-  Settings,
-  Bell,
-  HelpCircle,
-  Clock,
-  LogOut,
-  FileInput,
-  Brain,
-  Book,
-  Grid3X3,
-  Bookmark,
-} from 'lucide-react';
+import { Home, Calendar, List, Settings, User } from 'lucide-react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { useUser } from '@/firebase/auth/use-user';
+import { getAuth, signOut } from 'firebase/auth';
 
-import {
-  SidebarHeader,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarFooter,
-  SidebarSeparator,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-} from '@/components/ui/sidebar';
-import { Button } from './ui/button';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from './ui/collapsible';
-import { useAuth } from '@/firebase/provider';
-import { signOut } from 'firebase/auth';
-import { useToast } from '@/hooks/use-toast';
+export default function AppSidebar(): JSX.Element {
+  const { user, status } = useUser();
 
-export function AppSidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const auth = useAuth();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    if (!auth) return;
+  const handleSignOut = async () => {
     try {
+      const auth = getAuth();
       await signOut(auth);
-      toast({ title: 'Logged out successfully.' });
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-      toast({ variant: 'destructive', title: 'Logout Failed', description: 'Could not log you out. Please try again.' });
+    } catch (err) {
+      console.error('Sign-out failed', err);
     }
   };
 
-  const menuItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/calendar', label: 'Calendar', icon: Calendar },
-    { href: '/schedule', label: 'Timetable', icon: Grid3X3 },
-    { href: '/tasks', label: 'Tasks & Activities', icon: Bookmark },
-    { href: '/tasks/exams', label: 'Thinkathon', icon: Brain },
-    {
-      id: 'tools',
-      label: 'Tools',
-      icon: Wrench,
-      href: '/tools',
-      subMenu: [
-        { href: '/tools/timer', label: 'Focus Timer', icon: Clock },
-        {
-          href: '/tools/notifications',
-          label: 'Notifications',
-          icon: Bell,
-        },
-        {
-          href: '/tools/data',
-          label: 'Data Import/Export',
-          icon: FileInput,
-        },
-        { href: '/tools/settings', label: 'Settings', icon: Settings },
-        { href: '/tools/help', label: 'Help Center', icon: HelpCircle },
-      ],
-    },
-  ];
-
   return (
-    <>
-      <SidebarHeader>
-        <div className="flex items-center gap-2">
-          
-          <span className="text-lg font-semibold">Planify</span>
+    <aside className="w-64 border-r bg-muted/60 p-4">
+      <div className="mb-6 flex items-center gap-3">
+        <div className="relative h-10 w-10 rounded-md overflow-hidden bg-white/10">
+          <Image src="/logo192.png" alt="logo" fill sizes="40px" style={{ objectFit: 'cover' }} />
         </div>
-      </SidebarHeader>
-      <SidebarContent className="p-2">
-        <SidebarMenu>
-          {menuItems.map((item) =>
-            item.subMenu ? (
-              <Collapsible
-                key={item.id}
-                className="w-full"
-                defaultOpen={pathname.startsWith(item.href!)}
-              >
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith(item.href || '/tools')}
-                      className="w-full justify-start"
-                    >
-                      <Link href={item.href || '#'}>
-                        <item.icon />
-                        <span>{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {item.subMenu.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.href}>
-                        <SidebarMenuSubButton
-                          asChild
-                          isActive={pathname === subItem.href}
-                        >
-                          <Link href={subItem.href}>
-                            <subItem.icon />
-                            <span>{subItem.label}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </Collapsible>
-            ) : (
-              <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton asChild isActive={pathname.startsWith(item.href!)}>
-                  <Link href={item.href!}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )
-          )}
-        </SidebarMenu>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarSeparator />
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout}>
-              <LogOut />
-              <span>Logout</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </>
+        <div>
+          <h3 className="text-sm font-semibold">Planify</h3>
+          <p className="text-xs text-muted-foreground">Plan smarter</p>
+        </div>
+      </div>
+
+      <nav className="flex flex-col gap-2">
+        <Link href="/dashboard" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
+          <Home className="h-4 w-4" /> <span>Dashboard</span>
+        </Link>
+        <Link href="/tasks" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
+          <List className="h-4 w-4" /> <span>Tasks</span>
+        </Link>
+        <Link href="/calendar" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
+          <Calendar className="h-4 w-4" /> <span>Calendar</span>
+        </Link>
+        <Link href="/profile" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
+          <User className="h-4 w-4" /> <span>Profile</span>
+        </Link>
+        <Link href="/settings" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
+          <Settings className="h-4 w-4" /> <span>Settings</span>
+        </Link>
+      </nav>
+
+      <div className="mt-6">
+        {status === 'loading' ? (
+          <div className="text-sm text-muted-foreground">Loading...</div>
+        ) : user ? (
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full overflow-hidden bg-muted">
+              {user.photoURL ? (
+                <Image src={user.photoURL} alt={user.displayName ?? 'Avatar'} width={32} height={32} />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                  {user.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <div className="text-sm">{user.displayName ?? 'User'}</div>
+              <div className="text-xs text-muted-foreground">{user.email ?? ''}</div>
+            </div>
+            <Button size="sm" variant="ghost" onClick={handleSignOut}>Sign out</Button>
+          </div>
+        ) : (
+          <div>
+            <Link href="/login">
+              <Button size="sm">Sign in</Button>
+            </Link>
+          </div>
+        )}
+      </div>
+    </aside>
   );
 }
-    
