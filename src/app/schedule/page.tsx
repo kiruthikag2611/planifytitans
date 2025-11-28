@@ -30,6 +30,22 @@ type ScheduleData = {
     summary: string;
 }
 
+const exampleSchedule: ScheduleData = {
+  summary: "This is a sample schedule to demonstrate the timetable feature. You can generate your own personalized schedule by completing the questionnaire.",
+  schedule: [
+    { title: "Mathematics", day: "Monday", startTime: "09:00", endTime: "10:00", type: "Class", description: "Chapter 5: Algebra" },
+    { title: "Physics", day: "Monday", startTime: "11:00", endTime: "12:00", type: "Class", description: "Chapter 3: Motion" },
+    { title: "Lunch Break", day: "Monday", startTime: "12:00", endTime: "13:00", type: "Meal", description: "Cafeteria" },
+    { title: "History", day: "Tuesday", startTime: "10:00", endTime: "11:30", type: "Class", description: "Ancient Civilizations" },
+    { title: "Study: Math", day: "Tuesday", startTime: "14:00", endTime: "15:30", type: "Study", description: "Practice algebra problems" },
+    { title: "Gym Session", day: "Wednesday", startTime: "08:00", endTime: "09:00", type: "Gym" },
+    { title: "Lab Work", day: "Wednesday", startTime: "13:00", endTime: "15:00", type: "Lab", description: "Chemistry Experiment" },
+    { title: "Project Meeting", day: "Thursday", startTime: "15:00", endTime: "16:00", type: "Meeting", description: "Group project planning" },
+    { title: "Revision: Physics", day: "Friday", startTime: "10:00", endTime: "11:00", type: "Revision" },
+    { title: "Personal Task", day: "Friday", startTime: "16:00", endTime: "17:00", type: "Task", description: "Book flight tickets" },
+  ]
+};
+
 const eventColorMapping: { [key: string]: string } = {
   Class: 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-700',
   Study: 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-700',
@@ -66,33 +82,35 @@ export default function SchedulePage() {
         if (parsedData && Array.isArray(parsedData.schedule)) {
           setScheduleData(parsedData);
         } else {
-            // Invalid data, clear it and redirect
-            sessionStorage.removeItem('scheduleData');
-            toast({ variant: 'destructive', title: 'Invalid schedule data', description: 'Redirecting to create a new one.' });
-            router.push('/category');
+          setScheduleData(exampleSchedule);
         }
       } catch (e) {
         console.error("Failed to parse schedule data", e);
-        sessionStorage.removeItem('scheduleData');
-        toast({ variant: 'destructive', title: 'Could not load schedule', description: 'Redirecting to create a new one.' });
-        router.push('/category');
+        setScheduleData(exampleSchedule);
       }
     } else {
-       // No data, maybe user landed here directly.
-       // Redirect to onboarding or dashboard.
-       router.push('/dashboard');
+       setScheduleData(exampleSchedule);
     }
-  }, [router, toast]);
+  }, []);
   
   const handleSave = async () => {
     if (!scheduleData || !user || !firestore) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'No schedule data, user, or database connection available to save.',
+        description: 'You need to be logged in to save a schedule. No schedule data is available to save.',
       });
       return;
     }
+    
+    if (scheduleData === exampleSchedule) {
+      toast({
+        title: 'This is a Sample',
+        description: "Generate your own schedule from the 'Get Started' button on the homepage to save it to your calendar.",
+      });
+      return;
+    }
+    
     setIsSaving(true);
     
     const { schedule } = scheduleData;
@@ -219,11 +237,11 @@ export default function SchedulePage() {
 
               {/* Events */}
               {schedule?.filter(e => e.day === day).map((event, eventIndex) => {
-                 const [startHour, startMinute] = event.startTime.split(':').map(Number);
-                 const [endHour, endMinute] = event.endTime.split(':').map(Number);
+                 const [startEventHour, startMinute] = event.startTime.split(':').map(Number);
+                 const [endEventHour, endMinute] = event.endTime.split(':').map(Number);
                  
-                 const startOffset = ((startHour - startHour) * 2) + (startMinute / 30);
-                 const duration = ((endHour + endMinute/60) - (startHour + startMinute/60)) * 2;
+                 const startOffset = ((startEventHour - startHour) * 2) + (startMinute / 30);
+                 const duration = ((endEventHour + endMinute/60) - (startEventHour + startMinute/60)) * 2;
 
                 return (
                     <Card
