@@ -119,13 +119,6 @@ export default function LoginPage() {
                     </Link>
                 </Button>
                 <div className="w-full max-w-sm space-y-4">
-                    <Alert variant="destructive" className="bg-yellow-500/20 border-yellow-500/30 text-yellow-200">
-                        <AlertTriangle className="h-4 w-4 !text-yellow-400" />
-                        <AlertTitle className="text-yellow-300">Action Required</AlertTitle>
-                        <AlertDescription>
-                            To enable authentication, please go to your Firebase Console, navigate to the <b>Authentication</b> section, click on the <b>Sign-in method</b> tab, and enable the <b>Google</b> and <b>Email/Password</b> providers.
-                        </AlertDescription>
-                    </Alert>
                     <Card className="w-full max-w-sm animate-fade-in shadow-2xl border-white/20 bg-black/40 text-white backdrop-blur-sm">
                         <CardHeader className="text-center">
                             <CardTitle className="text-2xl">Welcome!</CardTitle>
