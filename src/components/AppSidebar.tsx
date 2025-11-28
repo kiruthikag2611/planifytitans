@@ -17,6 +17,7 @@ import {
   FileInput,
   Brain,
   Book,
+  Grid3X3,
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -32,7 +33,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
+import { Button } from './ui/button';
 import {
   Collapsible,
   CollapsibleContent,
@@ -63,6 +64,7 @@ export function AppSidebar() {
   const menuItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/calendar', label: 'Calendar', icon: Calendar },
+    { href: '/schedule', label: 'Timetable', icon: Grid3X3 },
     { href: '/tasks', label: 'Tasks & Activities', icon: ClipboardList },
     { href: '/tasks/exams', label: 'Thinkathon', icon: Brain },
     {
