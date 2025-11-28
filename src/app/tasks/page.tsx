@@ -19,6 +19,7 @@ import type { Activity } from "@/lib/types";
 import { ActivitySheet } from "@/components/calendar/ActivitySheet";
 import Image from "next/image";
 import { format, isToday, isFuture, isPast, formatDistanceToNow } from 'date-fns';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const tasks = [
     {
