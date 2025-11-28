@@ -60,16 +60,24 @@ export default function OnboardingPage() {
         });
         router.push('/dashboard');
       } else {
-        throw new Error(result.error || 'AI did not return a valid schedule.');
+        // Handle failure but still redirect
+        console.error('Failed to generate schedule:', result.error);
+        toast({
+          variant: 'destructive',
+          title: 'Could not generate timetable',
+          description: 'Using a default schedule for now. You can try again later.',
+        });
+        router.push('/dashboard');
       }
     } catch (error) {
+      // Handle exception but still redirect
       console.error('Failed to generate schedule:', error);
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
-        description: 'Could not generate your timetable. Please try again.',
+        description: 'Using a default schedule for now. You can try again later.',
       });
-      setIsGenerating(false);
+      router.push('/dashboard');
     }
   };
 
