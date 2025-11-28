@@ -36,11 +36,7 @@ export function useCollection<T>(
         return ref; // Keep it simple, specific queries should be memoized in the component
     }
     return pathOrQuery;
-<<<<<<< HEAD
   }, [pathOrQuery, firestore]);
-=======
-  }, [pathOrQuery, firestore, options?.query]);
->>>>>>> 44a3bc7 (Try fixing this error: `Console Error: FirebaseError: Missing or insuffi)
 
   useEffect(() => {
     if (!memoizedQuery) {

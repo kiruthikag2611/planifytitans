@@ -23,11 +23,7 @@ import { useFirestore } from '@/firebase/provider';
 import { doc, setDoc } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-<<<<<<< HEAD
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-=======
-
->>>>>>> 44a3bc7 (Try fixing this error: `Console Error: FirebaseError: Missing or insuffi)
 
 type QuestionnaireClientPageProps = {
   category: string;
@@ -51,8 +47,6 @@ export function QuestionnaireClientPage({
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const { user } = useUser();
-  const firestore = useFirestore();
 
   useEffect(() => {
     setIsClient(true);
@@ -74,48 +68,34 @@ export function QuestionnaireClientPage({
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    const newAnswers = { ...answers, ...data };
     updateAnswer(data);
-    const allAnswers = { ...answers, ...data };
+    const newAnswers = { ...answers, ...data };
 
     if (isLastQuestion) {
       setIsLoading(true);
-<<<<<<< HEAD
       const formattedAnswers = getFormattedAnswers();
       // Important: merge the final answer before submitting
       const finalAnswers = { ...formattedAnswers, ...data };
       
       const result = await createSchedule(finalAnswers);
 
-      if (result.success && result.data) {
-        if (user && firestore) {
-          const userRef = doc(firestore, 'users', user.uid);
-          const payload = { answers: newAnswers };
-          setDoc(userRef, payload, { merge: true }).catch(async (serverError) => {
-=======
       if (user && firestore) {
         const userRef = doc(firestore, 'users', user.uid);
-        const payload = { answers: allAnswers };
-
-        setDoc(userRef, payload, { merge: true })
-          .then(() => {
-            router.push('/dashboard');
-          })
-          .catch((serverError) => {
->>>>>>> 44a3bc7 (Try fixing this error: `Console Error: FirebaseError: Missing or insuffi)
-            const permissionError = new FirestorePermissionError({
-              path: userRef.path,
-              operation: 'update',
-              requestResourceData: payload,
-            });
-            errorEmitter.emit('permission-error', permissionError);
-<<<<<<< HEAD
+        const payload = { answers: newAnswers };
+        setDoc(userRef, payload, { merge: true }).catch(async (serverError) => {
+          const permissionError = new FirestorePermissionError({
+            path: userRef.path,
+            operation: 'update',
+            requestResourceData: payload,
           });
-        }
-        
+          errorEmitter.emit('permission-error', permissionError);
+        });
+      }
+      
+      if (result.success && result.data) {
         toast({
           title: 'Schedule Generated!',
-          description: 'Your new timetable is ready. Saving it now...',
+          description: 'Your new timetable is ready. Redirecting you now...',
         });
         sessionStorage.setItem('scheduleData', JSON.stringify(result.data));
         router.push('/schedule');
@@ -130,18 +110,6 @@ export function QuestionnaireClientPage({
       }
       setIsLoading(false);
 
-=======
-            setIsLoading(false);
-          });
-      } else {
-        toast({
-            variant: "destructive",
-            title: "Not signed in",
-            description: "You must be signed in to save your answers."
-        });
-        setIsLoading(false);
-      }
->>>>>>> 44a3bc7 (Try fixing this error: `Console Error: FirebaseError: Missing or insuffi)
     } else {
       router.push(`/q/${category}/${subCategory}/${questionIndex + 1}`);
     }

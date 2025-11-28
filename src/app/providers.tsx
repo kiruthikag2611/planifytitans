@@ -3,6 +3,8 @@
 
 import { QuestionnaireProvider } from '@/context/QuestionnaireProvider';
 import type { ReactNode } from 'react';
+
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { FirebaseProvider } from '@/firebase/provider';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
@@ -17,11 +19,14 @@ const firestore = getFirestore(app);
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <FirebaseProvider app={app} auth={auth} firestore={firestore}>
-      <FirebaseErrorListener />
-      <QuestionnaireProvider>
-        {children}
-      </QuestionnaireProvider>
-    </FirebaseProvider>
+    <FirebaseClientProvider>
+      <FirebaseProvider app={app} auth={auth} firestore={firestore}>
+        <FirebaseErrorListener />
+        <QuestionnaireProvider>
+          {children}
+        </QuestionnaireProvider>
+      </FirebaseProvider>
+    </FirebaseClientProvider>
   );
 }
+
