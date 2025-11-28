@@ -21,7 +21,7 @@ const FormSchema = z.object({
 
 const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
-export function Step4_Availability({ onNext }: { onNext: () => void }) {
+export function Step4_Availability({ onNext, onBack }: { onNext: () => void, onBack: () => void }) {
   const { answers, updateAnswers } = useQuestionnaire();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -109,7 +109,8 @@ export function Step4_Availability({ onNext }: { onNext: () => void }) {
             ))}
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+            <Button type="button" variant="ghost" onClick={onBack}>Previous Question</Button>
             <Button type="submit">Next</Button>
         </div>
       </form>

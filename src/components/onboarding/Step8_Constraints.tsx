@@ -18,7 +18,7 @@ const FormSchema = z.object({
   // `avoid_times` would be more complex, skipping for this UI example
 });
 
-export function Step8_Constraints({ onFinish, isGenerating }: { onFinish: () => void; isGenerating: boolean }) {
+export function Step8_Constraints({ onFinish, onBack, isGenerating }: { onFinish: () => void; onBack: () => void; isGenerating: boolean }) {
   const { answers, updateAnswers } = useQuestionnaire();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -81,7 +81,8 @@ export function Step8_Constraints({ onFinish, isGenerating }: { onFinish: () => 
             )}
         />
 
-        <div className="flex justify-end pt-8">
+        <div className="flex justify-between pt-8">
+            <Button type="button" variant="ghost" onClick={onBack}>Previous Question</Button>
             <Button type="submit" size="lg" disabled={isGenerating}>
                  {isGenerating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Generate my timetable

@@ -24,7 +24,7 @@ const FormSchema = z.object({
   tasks: z.array(taskSchema),
 });
 
-export function Step6_Tasks({ onNext }: { onNext: () => void }) {
+export function Step6_Tasks({ onNext, onBack }: { onNext: () => void, onBack: () => void }) {
   const { answers, updateAnswers } = useQuestionnaire();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -123,7 +123,7 @@ export function Step6_Tasks({ onNext }: { onNext: () => void }) {
         )}
 
         <div className="flex justify-between">
-            <Button type="button" variant="ghost" onClick={onNext}>Skip</Button>
+            <Button type="button" variant="ghost" onClick={onBack}>Previous Question</Button>
             <Button type="submit">Next</Button>
         </div>
       </form>

@@ -34,7 +34,7 @@ const daysOfWeek = [
     { id: 6, label: 'Sat' }
 ];
 
-export function Step3_Classes({ onNext }: { onNext: () => void }) {
+export function Step3_Classes({ onNext, onBack }: { onNext: () => void, onBack: () => void }) {
   const { answers, updateAnswers } = useQuestionnaire();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -172,7 +172,8 @@ export function Step3_Classes({ onNext }: { onNext: () => void }) {
             <p className="text-muted-foreground text-center py-8">No classes added yet. Click 'Add Class' to start.</p>
         )}
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+            <Button type="button" variant="ghost" onClick={onBack}>Previous Question</Button>
             <Button type="submit">Next</Button>
         </div>
       </form>

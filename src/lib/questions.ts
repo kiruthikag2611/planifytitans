@@ -165,6 +165,6 @@ export const timezones = [
   'Pacific/Tongatapu',
 ];
 
-export const preferredTimes = ['Morning', 'Afternoon', 'Evening'];
+export const preferredTimes = ['Early Morning', 'Morning', 'Afternoon', 'Evening'];
 export const studyBlockSizes = [25, 50, 90];
 >>>>>>> ffc861d (Feature: Onboarding → AI Timetable Generation)

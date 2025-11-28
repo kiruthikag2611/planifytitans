@@ -29,7 +29,7 @@ const activities = [
     },
 ];
 
-export function Step7_Activities({ onNext }: { onNext: () => void }) {
+export function Step7_Activities({ onNext, onBack }: { onNext: () => void, onBack: () => void }) {
   const { answers, updateAnswers } = useQuestionnaire();
 
   // In a real app, this would fetch from the `activities` collection
@@ -69,7 +69,7 @@ export function Step7_Activities({ onNext }: { onNext: () => void }) {
         </div>
 
         <div className="flex justify-between">
-            <Button type="button" variant="ghost" onClick={onNext}>Skip</Button>
+            <Button type="button" variant="ghost" onClick={onBack}>Previous Question</Button>
             <Button type="button" onClick={onNext}>Next</Button>
         </div>
       </div>

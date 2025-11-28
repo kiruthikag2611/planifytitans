@@ -31,6 +31,14 @@ export default function OnboardingPage() {
       handleFinish();
     }
   };
+
+  const handleBack = () => {
+    if (step > 1) {
+      router.push(`/onboarding/${step - 1}`);
+    } else {
+      router.push('/category');
+    }
+  }
   
   const handleFinish = async () => {
     setIsGenerating(true);
@@ -70,19 +78,19 @@ export default function OnboardingPage() {
       case 1:
         return <Step1_Timezone onNext={handleNext} />;
       case 2:
-        return <Step2_TermDates onNext={handleNext} />;
+        return <Step2_TermDates onNext={handleNext} onBack={handleBack} />;
       case 3:
-        return <Step3_Classes onNext={handleNext} />;
+        return <Step3_Classes onNext={handleNext} onBack={handleBack} />;
       case 4:
-        return <Step4_Availability onNext={handleNext} />;
+        return <Step4_Availability onNext={handleNext} onBack={handleBack} />;
       case 5:
-        return <Step5_StudyPreferences onNext={handleNext} />;
+        return <Step5_StudyPreferences onNext={handleNext} onBack={handleBack} />;
       case 6:
-        return <Step6_Tasks onNext={handleNext} />;
+        return <Step6_Tasks onNext={handleNext} onBack={handleBack} />;
       case 7:
-        return <Step7_Activities onNext={handleNext} />;
+        return <Step7_Activities onNext={handleNext} onBack={handleBack} />;
       case 8:
-        return <Step8_Constraints onFinish={handleFinish} isGenerating={isGenerating}/>;
+        return <Step8_Constraints onFinish={handleFinish} onBack={handleBack} isGenerating={isGenerating}/>;
       default:
         return <div>Invalid Step</div>;
     }

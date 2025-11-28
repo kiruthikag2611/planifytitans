@@ -14,7 +14,7 @@ const FormSchema = z.object({
   term_end: z.string().optional(),
 });
 
-export function Step2_TermDates({ onNext }: { onNext: () => void }) {
+export function Step2_TermDates({ onNext, onBack }: { onNext: () => void, onBack: () => void }) {
   const { answers, updateAnswers } = useQuestionnaire();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -64,7 +64,7 @@ export function Step2_TermDates({ onNext }: { onNext: () => void }) {
         </div>
         <FormDescription>If empty, we'll assume the next 12 weeks.</FormDescription>
         <div className="flex justify-between">
-            <Button type="button" variant="ghost" onClick={onNext}>Skip</Button>
+            <Button type="button" variant="ghost" onClick={onBack}>Previous Question</Button>
             <Button type="submit">Next</Button>
         </div>
       </form>

@@ -21,7 +21,7 @@ const FormSchema = z.object({
     preference_weight: z.enum(['conservative', 'aggressive']),
 });
 
-export function Step5_StudyPreferences({ onNext }: { onNext: () => void }) {
+export function Step5_StudyPreferences({ onNext, onBack }: { onNext: () => void, onBack: () => void }) {
   const { answers, updateAnswers } = useQuestionnaire();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -69,7 +69,10 @@ export function Step5_StudyPreferences({ onNext }: { onNext: () => void }) {
                             }}
                           />
                         </FormControl>
-                        <FormLabel className="font-normal">{item}</FormLabel>
+                        <div className="flex flex-col">
+                            <FormLabel className="font-normal">{item}</FormLabel>
+                            {item === 'Early Morning' && <p className="text-xs text-muted-foreground -mt-1">The early bird gets the worm!</p>}
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -181,7 +184,8 @@ export function Step5_StudyPreferences({ onNext }: { onNext: () => void }) {
             )}
         />
 
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+            <Button type="button" variant="ghost" onClick={onBack}>Previous Question</Button>
             <Button type="submit">Next</Button>
         </div>
       </form>
