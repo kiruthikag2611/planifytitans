@@ -38,6 +38,7 @@ const exampleSchedule: ScheduleData = {
     { title: "Lunch Break", day: "Monday", startTime: "12:00", endTime: "13:00", type: "Meal", description: "Cafeteria" },
     { title: "History", day: "Tuesday", startTime: "10:00", endTime: "11:30", type: "Class", description: "Ancient Civilizations" },
     { title: "Study: Math", day: "Tuesday", startTime: "14:00", endTime: "15:30", type: "Study", description: "Practice algebra problems" },
+    { title: "Tea Break", day: "Tuesday", startTime: "15:30", endTime: "16:00", type: "Break", description: "Quick break" },
     { title: "Gym Session", day: "Wednesday", startTime: "08:00", endTime: "09:00", type: "Gym" },
     { title: "Lab Work", day: "Wednesday", startTime: "13:00", endTime: "15:00", type: "Lab", description: "Chemistry Experiment" },
     { title: "Project Meeting", day: "Thursday", startTime: "15:00", endTime: "16:00", type: "Meeting", description: "Group project planning" },
