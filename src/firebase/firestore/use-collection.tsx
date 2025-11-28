@@ -33,7 +33,7 @@ export function useCollection<T>(
     if (!pathOrQuery || !firestore) return null;
     if (typeof pathOrQuery === 'string') {
         const ref = collection(firestore, pathOrQuery);
-        return ref; // Keep it simple, specific queries should be memoized in the component
+        return query(ref); // Always return a query
     }
     return pathOrQuery;
   }, [pathOrQuery, firestore]);
@@ -53,11 +53,13 @@ export function useCollection<T>(
         const result: T[] = [];
         snapshot.forEach((doc) => {
           const docData = doc.data();
-          const docId = docData.eventId || doc.id;
-          result.push({ ...docData, eventId: docId } as T);
+          // Use a consistent ID property, preferring a field like eventId or activityId, but falling back to the document ID.
+          const docId = docData.eventId || docData.activityId || doc.id;
+          result.push({ ...docData, id: docId, eventId: docId } as T);
         });
         
         setData(prevData => {
+            // Prevent re-render if the new data is identical to the old data.
             if (JSON.stringify(prevData) === JSON.stringify(result)) {
               return prevData;
             }
