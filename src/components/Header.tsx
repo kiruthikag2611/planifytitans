@@ -1,95 +1,87 @@
-
 'use client';
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from './ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { SidebarTrigger } from './ui/sidebar';
-import { useUser } from '@/firebase/auth/use-user';
-import { Skeleton } from './ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { useFirestore } from '@/firebase/provider';
-import { useDoc } from '@/firebase/firestore/use-doc';
-import { doc } from 'firebase/firestore';
+import React from 'react';
 import Link from 'next/link';
-import { useQuestionnaire } from '@/context/QuestionnaireProvider';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { useUser } from '@/firebase/auth/use-user';
+import { getAuth, signOut } from 'firebase/auth';
 
-export function Header() {
-  const router = useRouter();
+export default function Header(): JSX.Element {
   const { user, status } = useUser();
-  const firestore = useFirestore();
-  const { answers: localAnswers } = useQuestionnaire();
 
-  const userDocRef = user && firestore ? doc(firestore, 'users', user.uid) : null;
-
-  const { data: userProfile } = useDoc<{answers?: any}>(userDocRef);
-  
-  const answersToShow = userProfile?.answers || localAnswers;
-
-  const getInitials = (name: string | null | undefined) => {
-    if (!name) return 'U';
-    const names = name.split(' ');
-    if (names.length > 1) {
-      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+  const handleSignOut = async () => {
+    try {
+      const auth = getAuth();
+      await signOut(auth);
+    } catch (err) {
+      console.error('Sign-out failed:', err);
     }
-    return name[0].toUpperCase();
   };
 
   return (
-    <header className="flex h-14 items-center justify-between gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
-      <div className="flex items-center gap-2">
-        <SidebarTrigger />
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="lg:hidden">
-            <ArrowLeft className="h-5 w-5" />
-        </Button>
-      </div>
-      
-      <div className="flex items-center gap-3">
-        {status === 'loading' ? (
-           <Skeleton className="h-8 w-32" />
-        ) : user ? (
-            <Popover>
-              <PopoverTrigger asChild>
-                <div className="flex items-center gap-3 cursor-pointer">
-                  <div className="text-right hidden sm:block">
-                      <p className="text-sm font-medium leading-none">Hello, {user.displayName || 'User'}</p>
-                  </div>
-                  <Avatar>
-                      {user.photoURL ? <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} /> : null}
-                      <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
-                  </Avatar>
+    <header className="w-full border-b bg-background/60 backdrop-blur-sm">
+      <div className="mx-auto flex max-w-6xl items-center justify-between p-4 md:p-6">
+        
+        <Link href="/" className="flex items-center gap-3">
+          <div className="relative h-10 w-10 rounded-md overflow-hidden bg-muted">
+            <Image
+              src="/logo192.png"
+              alt="Planify logo"
+              fill
+              sizes="40px"
+              style={{ objectFit: 'cover' }}
+            />
+          </div>
+          <div className="flex flex-col leading-tight">
+            <span className="text-lg font-semibold">Planify</span>
+            <span className="text-xs text-muted-foreground -mt-1">
+              Smarter Schedule, Smoother Days
+            </span>
+          </div>
+        </Link>
+
+        <nav className="flex items-center gap-3">
+          <Link href="/tasks" className="hidden md:inline-block">
+            <Button variant="ghost" size="sm">Tasks</Button>
+          </Link>
+
+          <Link href="/calendar" className="hidden md:inline-block">
+            <Button variant="ghost" size="sm">Calendar</Button>
+          </Link>
+
+          {status === 'loading' ? (
+            <div className="text-sm text-muted-foreground">Loading...</div>
+          ) : user ? (
+            <div className="flex items-center gap-3">
+              <Link href="/profile" className="flex items-center gap-2">
+                <div className="h-9 w-9 rounded-full overflow-hidden bg-muted">
+                  {user.photoURL ? (
+                    <Image
+                      src={user.photoURL}
+                      alt={user.displayName ?? 'Avatar'}
+                      width={36}
+                      height={36}
+                      style={{ objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                      {user.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
+                    </div>
+                  )}
                 </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <h4 className="font-medium leading-none">Your Onboarding Answers</h4>
-                    <p className="text-sm text-muted-foreground">
-                      This is the information you provided to generate your schedule.
-                    </p>
-                  </div>
-                  <div className="grid gap-2 text-sm">
-                    {answersToShow && Object.keys(answersToShow).length > 0 ? (
-                      Object.entries(answersToShow).map(([key, value]) => (
-                        <div key={key} className="grid grid-cols-3 items-center gap-2">
-                          <span className="font-semibold capitalize col-span-1">{key.replace(/([A-Z])/g, ' $1')}:</span>
-                          <span className="text-muted-foreground col-span-2">{String(value)}</span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-muted-foreground">No answers found.</p>
-                    )}
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-        ) : (
-          <Button asChild>
-            <Link href="/login">Sign In</Link>
-          </Button>
-        )}
+              </Link>
+
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign out
+              </Button>
+            </div>
+          ) : (
+            <Link href="/login">
+              <Button size="sm">Sign in</Button>
+            </Link>
+          )}
+        </nav>
       </div>
     </header>
   );
