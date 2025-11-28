@@ -273,6 +273,8 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     const { toast } = useToast();
     const auth = useAuth();
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const form = useForm<z.infer<typeof signUpSchema>>({
         resolver: zodResolver(signUpSchema),
         defaultValues: { displayName: '', email: '', password: '' },
@@ -281,6 +283,7 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     const handleEmailSubmit = async (data: z.infer<typeof signUpSchema>) => {
         if (!auth) return;
         setIsLoading(true);
+        setError(null);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
             if (userCredential.user) {
@@ -301,11 +304,7 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
             if (error.code === 'auth/operation-not-allowed') {
                  description = 'Sign-up method is not enabled. Please enable it in your Firebase Console.';
             }
-            toast({
-                variant: 'destructive',
-                title: 'Sign Up Failed',
-                description,
-            });
+            setError(description);
         } finally {
             setIsLoading(false);
         }
@@ -314,6 +313,13 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEmailSubmit)} className="space-y-4 mt-4">
+                {error && (
+                    <Alert variant="destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Sign Up Failed</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
                 <FormField
                     control={form.control}
                     name="displayName"
@@ -375,6 +381,8 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
         </Form>
     );
 }
+
+    
 
     
 
