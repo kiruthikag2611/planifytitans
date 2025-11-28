@@ -13,15 +13,20 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { useFirestore } from '@/firebase/provider';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc } from 'firebase/firestore';
+import Link from 'next/link';
+import { useQuestionnaire } from '@/context/QuestionnaireProvider';
 
 export function Header() {
   const router = useRouter();
   const { user, status } = useUser();
   const firestore = useFirestore();
+  const { answers: localAnswers } = useQuestionnaire();
 
   const userDocRef = user && firestore ? doc(firestore, 'users', user.uid) : null;
 
-  const { data: userProfile } = useDoc<any>(userDocRef);
+  const { data: userProfile } = useDoc<{answers?: any}>(userDocRef);
+  
+  const answersToShow = userProfile?.answers || localAnswers;
 
   const getInitials = (name: string | null | undefined) => {
     if (!name) return 'U';
@@ -66,11 +71,11 @@ export function Header() {
                     </p>
                   </div>
                   <div className="grid gap-2 text-sm">
-                    {userProfile && userProfile.answers ? (
-                      Object.entries(userProfile.answers).map(([key, value]) => (
+                    {answersToShow && Object.keys(answersToShow).length > 0 ? (
+                      Object.entries(answersToShow).map(([key, value]) => (
                         <div key={key} className="grid grid-cols-3 items-center gap-2">
                           <span className="font-semibold capitalize col-span-1">{key.replace(/([A-Z])/g, ' $1')}:</span>
-                          <span className="text-muted-foreground col-span-2">{value as string}</span>
+                          <span className="text-muted-foreground col-span-2">{String(value)}</span>
                         </div>
                       ))
                     ) : (
@@ -82,7 +87,7 @@ export function Header() {
             </Popover>
         ) : (
           <Button asChild>
-            <a href="/login">Sign In</a>
+            <Link href="/login">Sign In</Link>
           </Button>
         )}
       </div>

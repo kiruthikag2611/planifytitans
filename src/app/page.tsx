@@ -6,10 +6,22 @@ import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/toaster';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useUser } from '@/firebase/auth/use-user';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-
+  const router = useRouter();
+  const { user, status } = useUser();
   const backgroundImage = PlaceHolderImages.find(p => p.id === 'cozy-study-ambience');
+
+  const handleGetStarted = () => {
+    if (status === 'authenticated') {
+      router.push('/dashboard');
+    } else {
+      router.push('/login');
+    }
+  };
+
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-center p-4">
@@ -31,8 +43,8 @@ export default function Home() {
             Smarter Schedule, Smoother Days.
           </p>
           <div className="mt-8">
-            <Button asChild size="lg" className="shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
-              <Link href="/login">Get Started</Link>
+            <Button onClick={handleGetStarted} size="lg" className="shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
+              Get Started
             </Button>
           </div>
         </div>

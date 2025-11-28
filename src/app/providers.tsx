@@ -8,6 +8,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { firebaseConfig } from '@/firebase/config';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 // Initialize firebase outside of components
 const app = initializeApp(firebaseConfig);
@@ -17,6 +18,7 @@ const firestore = getFirestore(app);
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <FirebaseProvider app={app} auth={auth} firestore={firestore}>
+      <FirebaseErrorListener />
       <QuestionnaireProvider>
         {children}
       </QuestionnaireProvider>

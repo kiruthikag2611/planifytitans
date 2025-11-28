@@ -64,7 +64,17 @@ export type PersonalizedScheduleGenerationOutput = z.infer<typeof PersonalizedSc
 export async function generatePersonalizedSchedule(
   input: PersonalizedScheduleGenerationInput
 ): Promise<PersonalizedScheduleGenerationOutput> {
-  return personalizedScheduleGenerationFlow(input);
+  const result = await personalizedScheduleGenerationFlow(input);
+  // Ensure the output matches the schema, especially the event types
+  if (result.schedule) {
+    const validTypes = ["Class", "Study", "Revision", "Break", "Meal", "Commute", "Gym", "Sleep", "Task", "Lab", "Practical", "Meeting", "Personal"];
+    result.schedule.forEach(event => {
+      if (!validTypes.includes(event.type)) {
+        event.type = "Task"; // Default to a generic type if invalid
+      }
+    });
+  }
+  return result;
 }
 
 const prompt = ai.definePrompt({
@@ -109,7 +119,7 @@ const prompt = ai.definePrompt({
   - **Breaks:** Incorporate breaks every 1-2 hours. Use the user's break preferences.
   - **Respect Preferences:** Strictly adhere to the user's specified availability, preferred times, and restricted hours.
   - **Creative Filling:** Creatively and logically fill the entire week from Monday to Sunday, including routines like meals, sleep, and commute, based on the user's input. Generate at least 20-30 events for a full week schedule.
-  - **Event Types**: Use a variety of event types from the allowed enum list, such as "Class", "Study", "Break", "Meal", "Commute", "Gym", "Sleep", etc.
+  - **Event Types**: Use a variety of event types from the allowed enum list: "Class", "Study", "Revision", "Break", "Meal", "Commute", "Gym", "Sleep", "Task", "Lab", "Practical", "Meeting", "Personal".
 
   **For Students:**
   - **Prioritize Subjects:** Schedule high-priority or difficult subjects during the user's preferred high-focus study times.
@@ -135,6 +145,9 @@ const personalizedScheduleGenerationFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error("Failed to generate schedule from AI prompt.");
+    }
+    return output;
   }
 );

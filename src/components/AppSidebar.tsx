@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Home,
   LayoutDashboard,
@@ -38,14 +38,31 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from './ui/collapsible';
+import { useAuth } from '@/firebase/provider';
+import { signOut } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const auth = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    if (!auth) return;
+    try {
+      await signOut(auth);
+      toast({ title: 'Logged out successfully.' });
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      toast({ variant: 'destructive', title: 'Logout Failed', description: 'Could not log you out. Please try again.' });
+    }
+  };
 
   const menuItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/calendar', label: 'Calendar', icon: Calendar },
-    { href: '/schedule', label: 'Timetable', icon: Book },
     { href: '/tasks', label: 'Tasks & Activities', icon: ClipboardList },
     { href: '/tasks/exams', label: 'Thinkathon', icon: Brain },
     {
@@ -137,11 +154,9 @@ export function AppSidebar() {
         <SidebarSeparator />
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link href="/">
-                <LogOut />
-                <span>Logout</span>
-              </Link>
+            <SidebarMenuButton onClick={handleLogout}>
+              <LogOut />
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

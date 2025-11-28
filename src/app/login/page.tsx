@@ -27,7 +27,11 @@ import Image from 'next/image';
 import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
-import { useAuth } from '@/firebase/provider';
+import { useAuth, useFirebase } from '@/firebase/provider';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
+import { useUser } from '@/firebase/auth/use-user';
+
 
 const GoogleIcon = () => (
     <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
@@ -55,8 +59,10 @@ const signInSchema = z.object({
   password: z.string().min(1, { message: 'Password is required.' }),
 });
 
-const signUpSchema = signInSchema.extend({
+const signUpSchema = z.object({
     displayName: z.string().min(1, { message: 'Name is required.' }),
+    email: z.string().email({ message: 'Please enter a valid email address.' }),
+    password: z.string().min(6, { message: 'Password must be at least 6 characters long.' }),
 });
 
 export default function LoginPage() {
@@ -65,10 +71,14 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const auth = useAuth();
+    const { user, status } = useUser();
     
     useEffect(() => {
         setIsClient(true);
-    }, []);
+        if (status === 'authenticated') {
+            router.replace('/dashboard');
+        }
+    }, [status, router]);
 
     const backgroundImage = PlaceHolderImages.find(p => p.id === 'login-background');
 
@@ -95,6 +105,14 @@ export default function LoginPage() {
             setIsLoading(false);
         }
     };
+
+    if (status === 'loading' || status === 'authenticated') {
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
 
     return (
         <div className="relative min-h-screen w-full">
@@ -172,6 +190,8 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     const { toast } = useToast();
     const auth = useAuth();
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const form = useForm<z.infer<typeof signInSchema>>({
         resolver: zodResolver(signInSchema),
         defaultValues: { email: '', password: '' },
@@ -180,6 +200,7 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     const handleEmailSubmit = async (data: z.infer<typeof signInSchema>) => {
         if (!auth) return;
         setIsLoading(true);
+        setError(null);
         try {
             await signInWithEmailAndPassword(auth, data.email, data.password);
             toast({ title: 'Login Successful', description: 'Redirecting...' });
@@ -189,11 +210,7 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                 description = 'Invalid credentials. Please check your email and password.';
             }
-            toast({
-                variant: 'destructive',
-                title: 'Sign In Failed',
-                description,
-            });
+            setError(description);
         } finally {
             setIsLoading(false);
         }
@@ -202,6 +219,13 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEmailSubmit)} className="space-y-4 mt-4">
+                 {error && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Sign In Failed</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
                 <FormField
                     control={form.control}
                     name="email"
@@ -256,6 +280,8 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     const { toast } = useToast();
     const auth = useAuth();
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const form = useForm<z.infer<typeof signUpSchema>>({
         resolver: zodResolver(signUpSchema),
         defaultValues: { displayName: '', email: '', password: '' },
@@ -264,6 +290,7 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     const handleEmailSubmit = async (data: z.infer<typeof signUpSchema>) => {
         if (!auth) return;
         setIsLoading(true);
+        setError(null);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
             if (userCredential.user) {
@@ -280,11 +307,7 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
             } else if (error.code === 'auth/weak-password') {
                 description = 'The password is too weak. Please use a stronger password.';
             }
-            toast({
-                variant: 'destructive',
-                title: 'Sign Up Failed',
-                description,
-            });
+            setError(description);
         } finally {
             setIsLoading(false);
         }
@@ -293,6 +316,13 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEmailSubmit)} className="space-y-4 mt-4">
+                 {error && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Sign Up Failed</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
                 <FormField
                     control={form.control}
                     name="displayName"

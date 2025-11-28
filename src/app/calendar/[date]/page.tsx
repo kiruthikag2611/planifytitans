@@ -3,15 +3,15 @@
 
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { format, parse, startOfDay, addHours, isSameDay } from 'date-fns';
+import { format, parse, startOfDay, addHours } from 'date-fns';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, where } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Clock, Plus, Bot, Check, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CalendarEvent } from '@/lib/types';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -21,11 +21,22 @@ const eventColorMapping: { [key: string]: string } = {
   Class: 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-700',
   Assignment: 'bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/50 dark:text-orange-200 dark:border-orange-700',
   Exam: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/50 dark:text-red-200 dark:border-red-700',
-  Task: 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-700',
+  Task: 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/50 dark:text-yellow-200 dark:border-yellow-700',
   'Study Time': 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-700',
   Personal: 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/50 dark:text-purple-200 dark:border-purple-700',
   Custom: 'bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-700/50 dark:text-gray-200 dark:border-gray-600',
+  Study: 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/50 dark:text-green-200 dark:border-green-700',
+  Revision: 'bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-900/50 dark:text-indigo-200 dark:border-indigo-700',
+  Break: 'bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-700/50 dark:text-gray-200 dark:border-gray-600',
+  Meal: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/50 dark:text-amber-200 dark:border-amber-700',
+  Gym: 'bg-pink-100 text-pink-800 border-pink-300 dark:bg-pink-900/50 dark:text-pink-200 dark:border-pink-700',
+  Sleep: 'bg-slate-200 text-slate-800 border-slate-300 dark:bg-slate-800/50 dark:text-slate-200 dark:border-slate-600',
+  Lab: 'bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-900/50 dark:text-cyan-200 dark:border-cyan-700',
+  Practical: 'bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-900/50 dark:text-cyan-200 dark:border-cyan-700',
+  Meeting: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/50 dark:text-rose-200 dark:border-rose-700',
+  Commute: 'bg-stone-100 text-stone-800 border-stone-300 dark:bg-stone-700/50 dark:text-stone-200 dark:border-stone-600',
 };
+
 
 export default function DailyTimetablePage() {
   const params = useParams();
@@ -48,16 +59,9 @@ export default function DailyTimetablePage() {
     );
   }, [user, firestore, selectedDate]);
 
-  const { data: events, loading } = useCollection<CalendarEvent>(eventsQuery);
+  const { data: events } = useCollection<CalendarEvent>(eventsQuery);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
-
-  const getEventForHour = (hour: number) => {
-    return events?.find(e => {
-        const startHour = parseInt(e.startTime.split(':')[0], 10);
-        return startHour === hour;
-    });
-  }
 
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
@@ -78,14 +82,14 @@ export default function DailyTimetablePage() {
 
     return {
         top: `${top}px`,
-        height: `${height}px`,
+        height: `${Math.max(30, height)}px`, // min height
     };
   };
 
   return (
     <div className="flex flex-col h-screen">
        <header className="p-4 border-b flex items-center justify-between sticky top-0 bg-background/95 z-10">
-         <Button variant="ghost" size="icon" onClick={() => router.back()}>
+         <Button variant="ghost" size="icon" onClick={() => router.push('/calendar')}>
            <ArrowLeft className="h-5 w-5" />
          </Button>
          <h2 className="text-lg sm:text-xl font-bold text-center">
@@ -95,7 +99,7 @@ export default function DailyTimetablePage() {
        </header>
 
       <ScrollArea className="flex-1">
-        <div className="relative p-2 sm:p-4">
+        <div className="relative p-2 sm:p-4 min-h-[1440px]"> {/* 24 * 60 */}
           {hours.map(hour => (
             <div key={hour} className="relative h-[60px] border-t border-dashed">
               <span className="absolute -top-3 left-0 text-xs text-muted-foreground">
@@ -116,26 +120,13 @@ export default function DailyTimetablePage() {
                 {event.description && <p className="text-[10px] sm:text-xs truncate text-muted-foreground">{event.description}</p>}
              </Card>
           ))}
-          
-           {/* Example auto-scheduled block */}
-          <Card 
-            className={cn('absolute w-[calc(100%-3.5rem)] sm:w-[calc(100%-4rem)] left-10 sm:left-12 p-2 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg', eventColorMapping['Study Time'])}
-            style={{top: `${14*60}px`, height: '50px'}}
-          >
-             <div className="flex justify-between items-center">
-                 <p className="font-bold text-xs sm:text-sm truncate">Study Physics</p>
-                 <span className="text-[10px] sm:text-xs font-semibold inline-flex items-center gap-1"><Bot size={12}/> Suggested</span>
-             </div>
-             <p className="text-[10px] sm:text-xs truncate">2:00 PM - 2:50 PM</p>
-          </Card>
         </div>
       </ScrollArea>
       
-      <footer className="p-2 border-t flex justify-around items-center sticky bottom-0 bg-background/95 z-10">
-        <Button variant="outline" size="sm" className="text-xs px-2"><Sparkles className="mr-1 h-3 w-3"/>Auto-Fill</Button>
+      <footer className="p-2 border-t flex justify-center items-center sticky bottom-0 bg-background/95 z-10">
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetTrigger asChild>
-            <Button size="sm" onClick={handleAddEvent} className="text-xs px-2"><Plus className="mr-1 h-3 w-3" /> Add Task</Button>
+            <Button size="sm" onClick={handleAddEvent} className="text-xs px-2"><Plus className="mr-1 h-3 w-3" /> Add Event</Button>
           </SheetTrigger>
           <SheetContent className="w-full max-w-full sm:max-w-lg">
             <SheetHeader>
@@ -144,7 +135,6 @@ export default function DailyTimetablePage() {
             <EventForm event={selectedEvent} onSave={() => setIsSheetOpen(false)} selectedDate={selectedDate}/>
           </SheetContent>
         </Sheet>
-        <Button variant="secondary" size="sm" className="text-xs px-2"><Check className="mr-1 h-3 w-3"/>Confirm</Button>
       </footer>
     </div>
   );

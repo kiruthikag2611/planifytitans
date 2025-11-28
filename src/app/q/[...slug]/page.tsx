@@ -17,13 +17,13 @@ export default function QuestionPage({ params }: QuestionPageProps) {
     !category ||
     !subCategory ||
     isNaN(questionIndex) ||
-    !questions[category] ||
-    !questions[category][subCategory]
+    !questions[category as keyof typeof questions] ||
+    !questions[category as keyof typeof questions][subCategory as keyof typeof questions[keyof typeof questions]]
   ) {
     return notFound();
   }
 
-  const questionSet = questions[category][subCategory];
+  const questionSet = questions[category as keyof typeof questions][subCategory as keyof typeof questions[keyof typeof questions]];
   const totalQuestions = questionSet.length;
 
   if (questionIndex < 0 || questionIndex >= totalQuestions) {
