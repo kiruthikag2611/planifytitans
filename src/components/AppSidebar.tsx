@@ -18,6 +18,7 @@ import {
   Brain,
   Book,
   Grid3X3,
+  Bookmark,
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -65,7 +66,7 @@ export function AppSidebar() {
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/calendar', label: 'Calendar', icon: Calendar },
     { href: '/schedule', label: 'Timetable', icon: Grid3X3 },
-    { href: '/tasks', label: 'Tasks & Activities', icon: ClipboardList },
+    { href: '/tasks', label: 'Tasks & Activities', icon: Bookmark },
     { href: '/tasks/exams', label: 'Thinkathon', icon: Brain },
     {
       id: 'tools',
@@ -166,3 +167,4 @@ export function AppSidebar() {
     </>
   );
 }
+    

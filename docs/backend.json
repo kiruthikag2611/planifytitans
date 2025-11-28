@@ -1,3 +1,4 @@
+
 {
     "entities": {
         "userProfile": {
@@ -114,6 +115,25 @@
                 }
             },
             "required": ["eventId", "userId", "title", "type", "date", "startTime", "endTime"]
+        },
+        "activity": {
+            "title": "Activity",
+            "description": "Represents a college event like a seminar, workshop, or fest.",
+            "type": "object",
+            "properties": {
+                "activityId": { "type": "string", "description": "Unique ID for the activity." },
+                "title": { "type": "string", "description": "Title of the activity." },
+                "description": { "type": "string", "description": "Detailed description of the activity." },
+                "location": { "type": "string", "description": "Venue or location of the activity." },
+                "startDatetime": { "type": "string", "format": "date-time", "description": "Start date and time." },
+                "endDatetime": { "type": "string", "format": "date-time", "description": "End date and time." },
+                "organizer": { "type": "string", "description": "Name of the organizing body or person." },
+                "imageUrl": { "type": "string", "format": "uri", "description": "Optional URL for an image." },
+                "link": { "type": "string", "format": "uri", "description": "Optional link for more details." },
+                "tags": { "type": "array", "items": { "type": "string" }, "description": "Tags like 'seminar', 'workshop', 'fest'." },
+                "rsvps": { "type": "array", "items": { "type": "string" }, "description": "List of user IDs who have RSVP'd." }
+            },
+            "required": ["activityId", "title", "location", "startDatetime", "endDatetime", "organizer"]
         }
     },
     "auth": {
@@ -131,6 +151,11 @@
                 "$ref": "#/entities/calendarEvent"
             },
             "description": "Stores all calendar events for all users."
+        },
+        "/activities/{activityId}": {
+            "schema": { "$ref": "#/entities/activity" },
+            "description": "Stores all college activities and events."
         }
     }
 }
+    

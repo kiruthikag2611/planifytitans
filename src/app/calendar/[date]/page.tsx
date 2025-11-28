@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { format, parse, startOfDay, addHours } from 'date-fns';
+import { format, parse, startOfDay, addHours, parseISO } from 'date-fns';
 import { useUser } from '@/firebase/auth/use-user';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, where } from 'firebase/firestore';
@@ -13,9 +13,10 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ArrowLeft, Plus, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { CalendarEvent } from '@/lib/types';
+import type { CalendarEvent, Activity } from '@/lib/types';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { EventForm } from '@/components/calendar/EventForm';
+import { ActivitySheet } from '@/components/calendar/ActivitySheet';
 
 const eventColorMapping: { [key: string]: string } = {
   Class: 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-200 dark:border-blue-700',
@@ -35,6 +36,7 @@ const eventColorMapping: { [key: string]: string } = {
   Practical: 'bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-900/50 dark:text-cyan-200 dark:border-cyan-700',
   Meeting: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-900/50 dark:text-rose-200 dark:border-rose-700',
   Commute: 'bg-stone-100 text-stone-800 border-stone-300 dark:bg-stone-700/50 dark:text-stone-200 dark:border-stone-600',
+  Activity: 'bg-teal-100 text-teal-800 border-teal-300 dark:bg-teal-900/50 dark:text-teal-200 dark:border-teal-700'
 };
 
 
@@ -46,34 +48,56 @@ export default function DailyTimetablePage() {
 
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
   const [selectedEvent, setSelectedEvent] = React.useState<CalendarEvent | null>(null);
+  const [selectedActivity, setSelectedActivity] = React.useState<Activity | null>(null);
+  const [sheetType, setSheetType] = React.useState<'event' | 'activity' | null>(null);
 
   const dateParam = Array.isArray(params.date) ? params.date[0] : params.date;
   const selectedDate = parse(dateParam, 'yyyy-MM-dd', new Date());
+  const formattedDate = format(selectedDate, 'yyyy-MM-dd');
 
   const eventsQuery = React.useMemo(() => {
     if (!user || !firestore) return null;
     return query(
       collection(firestore, 'calendarEvents'),
       where('userId', '==', user.uid),
-      where('date', '==', format(selectedDate, 'yyyy-MM-dd'))
+      where('date', '==', formattedDate)
     );
-  }, [user, firestore, selectedDate]);
+  }, [user, firestore, formattedDate]);
+
+  const activitiesQuery = React.useMemo(() => {
+    if (!firestore) return null;
+    // We fetch all activities and filter client-side for the selected date
+    return query(collection(firestore, 'activities'));
+  }, [firestore]);
 
   const { data: events } = useCollection<CalendarEvent>(eventsQuery);
+  const { data: allActivities } = useCollection<Activity>(activitiesQuery);
+
+  const activities = React.useMemo(() => {
+    return allActivities?.filter(a => format(parseISO(a.startDatetime), 'yyyy-MM-dd') === formattedDate) || [];
+  }, [allActivities, formattedDate]);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
+    setSheetType('event');
+    setIsSheetOpen(true);
+  };
+
+  const handleActivityClick = (activity: Activity) => {
+    setSelectedActivity(activity);
+    setSheetType('activity');
     setIsSheetOpen(true);
   };
   
   const handleAddEvent = () => {
     setSelectedEvent(null);
+    setSheetType('event');
     setIsSheetOpen(true);
   }
 
-  const getEventStyle = (event: CalendarEvent) => {
+  const getEventStyle = (event: {startTime: string, endTime: string}) => {
     const [startHour, startMinute] = event.startTime.split(':').map(Number);
     const [endHour, endMinute] = event.endTime.split(':').map(Number);
     
@@ -120,6 +144,25 @@ export default function DailyTimetablePage() {
                 {event.description && <p className="text-[10px] sm:text-xs truncate text-muted-foreground">{event.description}</p>}
              </Card>
           ))}
+
+          {activities?.map(activity => {
+             const activityEvent = {
+                 startTime: format(parseISO(activity.startDatetime), 'HH:mm'),
+                 endTime: format(parseISO(activity.endDatetime), 'HH:mm')
+             };
+             return (
+                 <Card 
+                    key={activity.activityId} 
+                    className={cn('absolute w-[calc(100%-3.5rem)] sm:w-[calc(100%-4rem)] left-10 sm:left-12 p-2 rounded-lg shadow-md cursor-pointer transition-all hover:shadow-lg', eventColorMapping['Activity'])}
+                    style={getEventStyle(activityEvent)}
+                    onClick={() => handleActivityClick(activity)}
+                 >
+                    <p className="font-bold text-xs sm:text-sm truncate">{activity.title}</p>
+                    <p className="text-[10px] sm:text-xs truncate">{activityEvent.startTime} - {activityEvent.endTime}</p>
+                    {activity.location && <p className="text-[10px] sm:text-xs truncate text-muted-foreground">{activity.location}</p>}
+                 </Card>
+             )
+          })}
         </div>
       </ScrollArea>
       
@@ -129,13 +172,21 @@ export default function DailyTimetablePage() {
             <Button size="sm" onClick={handleAddEvent} className="text-xs px-2"><Plus className="mr-1 h-3 w-3" /> Add Event</Button>
           </SheetTrigger>
           <SheetContent className="w-full max-w-full sm:max-w-lg">
-            <SheetHeader>
-              <SheetTitle>{selectedEvent ? 'Edit Event' : 'Add New Event'}</SheetTitle>
-            </SheetHeader>
-            <EventForm event={selectedEvent} onSave={() => setIsSheetOpen(false)} selectedDate={selectedDate}/>
+            {sheetType === 'event' && (
+              <>
+                <SheetHeader>
+                  <SheetTitle>{selectedEvent ? 'Edit Event' : 'Add New Event'}</SheetTitle>
+                </SheetHeader>
+                <EventForm event={selectedEvent} onSave={() => setIsSheetOpen(false)} selectedDate={selectedDate}/>
+              </>
+            )}
+             {sheetType === 'activity' && (
+                <ActivitySheet activity={selectedActivity} onSave={() => setIsSheetOpen(false)} />
+             )}
           </SheetContent>
         </Sheet>
       </footer>
     </div>
   );
 }
+    

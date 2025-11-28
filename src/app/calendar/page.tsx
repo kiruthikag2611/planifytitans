@@ -39,7 +39,7 @@ import {
 } from '@/components/ui/sheet';
 import { EventForm } from '@/components/calendar/EventForm';
 import { cn } from '@/lib/utils';
-import type { CalendarEvent } from '@/lib/types';
+import type { CalendarEvent, Activity } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function CalendarPage() {
@@ -64,7 +64,15 @@ export default function CalendarPage() {
     );
   }, [user, firestore]);
 
-  const { data: events, loading } = useCollection<CalendarEvent>(eventsQuery);
+   const activitiesQuery = React.useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'activities'));
+  }, [firestore]);
+
+  const { data: events, loading: eventsLoading } = useCollection<CalendarEvent>(eventsQuery);
+  const { data: activities, loading: activitiesLoading } = useCollection<Activity>(activitiesQuery);
+  
+  const loading = eventsLoading || activitiesLoading;
 
   const firstDayOfMonth = startOfMonth(currentMonth);
   const lastDayOfMonth = endOfMonth(currentMonth);
@@ -75,7 +83,9 @@ export default function CalendarPage() {
   });
 
   const hasEvents = (day: Date) => {
-    return events?.some((e) => isSameDay(new Date(e.date), day)) || false;
+    const eventExists = events?.some((e) => isSameDay(new Date(e.date), day)) || false;
+    const activityExists = activities?.some(a => isSameDay(new Date(a.startDatetime), day)) || false;
+    return eventExists || activityExists;
   };
   
   const isDayToday = (day: Date) => {
@@ -178,3 +188,4 @@ export default function CalendarPage() {
     </div>
   );
 }
+    
