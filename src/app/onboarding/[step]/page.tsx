@@ -55,10 +55,10 @@ export default function OnboardingPage() {
         // The AI result is nested, so we extract the schedule array
         sessionStorage.setItem('scheduleData', JSON.stringify(result.data.schedule));
         toast({
-          title: 'Timetable Generated!',
-          description: 'Redirecting you to your new schedule.',
+          title: 'Timetable generated successfully!',
+          description: 'Redirecting you to your dashboard.',
         });
-        router.push('/schedule');
+        router.push('/dashboard');
       } else {
         throw new Error(result.error || 'AI did not return a valid schedule.');
       }

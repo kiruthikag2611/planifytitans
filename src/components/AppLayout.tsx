@@ -12,8 +12,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const noSidebarPaths = ['/', '/login'];
   
   const isNoSidebarPage = noSidebarPaths.includes(pathname);
+  const isOnboarding = pathname.startsWith('/onboarding') || pathname.startsWith('/category');
 
-  if (isNoSidebarPage) {
+  if (isNoSidebarPage || isOnboarding) {
     // For auth and onboarding pages, render children directly without the main app layout.
     return (
         <>
@@ -22,17 +23,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </>
     );
   }
-  
-  // For timetable page, we want a different layout
-  if (pathname.startsWith('/schedule')) {
-     return (
-        <>
-            {children}
-            <Toaster />
-        </>
-    );
-  }
-
 
   // For all other pages, use the standard layout with the sidebar.
   return (

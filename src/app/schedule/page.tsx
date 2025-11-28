@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Download, Loader2 } from 'lucide-react';
+import { Download, Loader2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
@@ -55,21 +55,23 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching the schedule
-    setSchedule(exampleSchedule);
-    setLoading(false);
+    try {
+        const storedSchedule = sessionStorage.getItem('scheduleData');
+        if (storedSchedule) {
+            setSchedule(JSON.parse(storedSchedule));
+        } else {
+            setSchedule(exampleSchedule);
+        }
+    } catch(e) {
+        console.error("Failed to parse schedule data", e);
+        setSchedule(exampleSchedule); // Fallback to example
+    } finally {
+        setLoading(false);
+    }
   }, []);
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <header className="flex items-center justify-between p-4 border-b sticky top-0 bg-background/95 z-20">
-        <h1 className="text-md sm:text-xl font-bold font-headline">Your AI-Generated Timetable</h1>
-        <div className="flex items-center gap-2">
-           <Button variant="outline" size="sm" onClick={() => router.push('/dashboard')}>Dashboard</Button>
-           <Button size="sm"><Download className="mr-2 h-4 w-4" /> Save</Button>
-        </div>
-      </header>
-
       <main className="flex-1 overflow-auto p-2 sm:p-4">
         {loading ? (
             <div className="flex items-center justify-center h-full">
@@ -80,7 +82,7 @@ export default function SchedulePage() {
             <div className="flex flex-col items-center justify-center h-full text-center">
                 <h2 className="text-2xl font-bold">No Schedule Found</h2>
                 <p className="text-muted-foreground mt-2">There was a problem loading your timetable.</p>
-                <Button onClick={() => window.location.reload()} className="mt-6">Try Again</Button>
+                <Button onClick={() => router.push('/onboarding/1')} className="mt-6">Generate New Timetable</Button>
             </div>
         ) : (
             <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-x-1 sm:gap-x-2 min-w-[800px]">
