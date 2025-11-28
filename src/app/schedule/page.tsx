@@ -34,16 +34,35 @@ const exampleSchedule: ScheduleData = {
   summary: "This is a sample schedule to demonstrate the timetable feature. You can generate your own personalized schedule by completing the questionnaire.",
   schedule: [
     { title: "Mathematics", day: "Monday", startTime: "09:00", endTime: "10:00", type: "Class", description: "Chapter 5: Algebra" },
+    { title: "Study: Math", day: "Monday", startTime: "10:00", endTime: "11:00", type: "Study", description: "Review lecture notes" },
     { title: "Physics", day: "Monday", startTime: "11:00", endTime: "12:00", type: "Class", description: "Chapter 3: Motion" },
     { title: "Lunch Break", day: "Monday", startTime: "12:00", endTime: "13:00", type: "Meal", description: "Cafeteria" },
-    { title: "History", day: "Tuesday", startTime: "10:00", endTime: "11:30", type: "Class", description: "Ancient Civilizations" },
-    { title: "Study: Math", day: "Tuesday", startTime: "14:00", endTime: "15:30", type: "Study", description: "Practice algebra problems" },
-    { title: "Tea Break", day: "Tuesday", startTime: "15:30", endTime: "16:00", type: "Break", description: "Quick break" },
+    { title: "Study: Physics", day: "Monday", startTime: "13:00", endTime: "14:30", type: "Study", description: "Problem set 2" },
+    { title: "Short Break", day: "Monday", startTime: "14:30", endTime: "15:00", type: "Break" },
+    { title: "History", day: "Monday", startTime: "15:00", endTime: "16:00", type: "Class", description: "The World Wars" },
+
+    { title: "Chemistry", day: "Tuesday", startTime: "10:00", endTime: "11:30", type: "Class", description: "Organic Chemistry Intro" },
+    { title: "Lunch Break", day: "Tuesday", startTime: "12:00", endTime: "13:00", type: "Meal" },
+    { title: "Chemistry Lab", day: "Tuesday", startTime: "13:00", endTime: "15:00", type: "Lab" },
+    { title: "Tea Break", day: "Tuesday", startTime: "15:00", endTime: "15:30", type: "Break" },
+    { title: "Study: History", day: "Tuesday", startTime: "15:30", endTime: "17:00", type: "Study", description: "Read Chapter 4" },
+    
     { title: "Gym Session", day: "Wednesday", startTime: "08:00", endTime: "09:00", type: "Gym" },
-    { title: "Lab Work", day: "Wednesday", startTime: "13:00", endTime: "15:00", type: "Lab", description: "Chemistry Experiment" },
-    { title: "Project Meeting", day: "Thursday", startTime: "15:00", endTime: "16:00", type: "Meeting", description: "Group project planning" },
-    { title: "Revision: Physics", day: "Friday", startTime: "10:00", endTime: "11:00", type: "Revision" },
-    { title: "Personal Task", day: "Friday", startTime: "16:00", endTime: "17:00", type: "Task", description: "Book flight tickets" },
+    { title: "Physics", day: "Wednesday", startTime: "10:00", endTime: "11:00", type: "Class" },
+    { title: "Lunch Break", day: "Wednesday", startTime: "12:00", endTime: "13:00", type: "Meal" },
+    { title: "Project Meeting", day: "Wednesday", startTime: "14:00", endTime: "15:00", type: "Meeting", description: "Final year project" },
+    { title: "Study: Math", day: "Wednesday", startTime: "15:00", endTime: "17:00", type: "Study", description: "Advanced calculus" },
+
+    { title: "History", day: "Thursday", startTime: "09:00", endTime: "10:00", type: "Class" },
+    { title: "Study: Chemistry", day: "Thursday", startTime: "10:30", endTime: "12:00", type: "Revision" },
+    { title: "Lunch Break", day: "Thursday", startTime: "12:00", endTime: "13:00", type: "Meal" },
+    { title: "Mathematics", day: "Thursday", startTime: "13:00", endTime: "14:00", type: "Class" },
+    { title: "Personal Task", day: "Thursday", startTime: "15:00", endTime: "16:00", type: "Task", description: "Bank appointment" },
+    
+    { title: "Chemistry", day: "Friday", startTime: "11:00", endTime: "12:30", type: "Class" },
+    { title: "Lunch Break", day: "Friday", startTime: "12:30", endTime: "13:30", type: "Meal" },
+    { title: "Revision: All Subjects", day: "Friday", startTime: "14:00", endTime: "16:00", type: "Revision", description: "Weekly review" },
+    { title: "Commute", day: "Friday", startTime: "16:30", endTime: "17:00", type: "Commute", description: "Travel back home" }
   ]
 };
 
