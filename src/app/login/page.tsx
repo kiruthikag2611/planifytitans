@@ -24,10 +24,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Image from 'next/image';
-import { Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Loader2, ArrowLeft, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { useAuth } from '@/firebase/provider';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 
 const GoogleIcon = () => (
     <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
@@ -116,53 +118,62 @@ export default function LoginPage() {
                        Back
                     </Link>
                 </Button>
-                <Card className="w-full max-w-sm animate-fade-in shadow-2xl border-white/20 bg-black/40 text-white backdrop-blur-sm">
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-2xl">Welcome!</CardTitle>
-                        <CardDescription className="text-white/80">Create an account or sign in to continue.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {!isClient ? (
-                            <div className="space-y-4">
-                                <Skeleton className="h-10 w-full" />
-                                <Skeleton className="h-10 w-full" />
-                                <Skeleton className="h-10 w-full" />
-                                <Skeleton className="h-10 w-full" />
-                            </div>
-                        ) : (
-                            <>
-                                <Tabs defaultValue="signup" className="w-full">
-                                    <TabsList className="grid w-full grid-cols-2 bg-white/10 text-white/70">
-                                        <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                                        <TabsTrigger value="signin">Sign In</TabsTrigger>
-                                    </TabsList>
-                                    <TabsContent value="signup">
-                                        <SignUpForm setIsLoading={setIsLoading} isLoading={isLoading} />
-                                    </TabsContent>
-                                    <TabsContent value="signin">
-                                        <SignInForm setIsLoading={setIsLoading} isLoading={isLoading} />
-                                    </TabsContent>
-                                </Tabs>
-
-                                <div className="relative my-6">
-                                    <div className="absolute inset-0 flex items-center">
-                                        <span className="w-full border-t border-white/30" />
-                                    </div>
-                                    <div className="relative flex justify-center text-xs uppercase">
-                                        <span className="bg-black/40 px-2 text-white/80">
-                                            Or continue with
-                                        </span>
-                                    </div>
+                <div className="w-full max-w-sm space-y-4">
+                    <Alert variant="destructive" className="bg-yellow-500/20 border-yellow-500/30 text-yellow-200">
+                        <AlertTriangle className="h-4 w-4 !text-yellow-400" />
+                        <AlertTitle className="text-yellow-300">Action Required</AlertTitle>
+                        <AlertDescription>
+                            To enable authentication, please go to your Firebase Console, navigate to the <b>Authentication</b> section, click on the <b>Sign-in method</b> tab, and enable the <b>Google</b> and <b>Email/Password</b> providers.
+                        </AlertDescription>
+                    </Alert>
+                    <Card className="w-full max-w-sm animate-fade-in shadow-2xl border-white/20 bg-black/40 text-white backdrop-blur-sm">
+                        <CardHeader className="text-center">
+                            <CardTitle className="text-2xl">Welcome!</CardTitle>
+                            <CardDescription className="text-white/80">Create an account or sign in to continue.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {!isClient ? (
+                                <div className="space-y-4">
+                                    <Skeleton className="h-10 w-full" />
+                                    <Skeleton className="h-10 w-full" />
+                                    <Skeleton className="h-10 w-full" />
+                                    <Skeleton className="h-10 w-full" />
                                 </div>
+                            ) : (
+                                <>
+                                    <Tabs defaultValue="signup" className="w-full">
+                                        <TabsList className="grid w-full grid-cols-2 bg-white/10 text-white/70">
+                                            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                                            <TabsTrigger value="signin">Sign In</TabsTrigger>
+                                        </TabsList>
+                                        <TabsContent value="signup">
+                                            <SignUpForm setIsLoading={setIsLoading} isLoading={isLoading} />
+                                        </TabsContent>
+                                        <TabsContent value="signin">
+                                            <SignInForm setIsLoading={setIsLoading} isLoading={isLoading} />
+                                        </TabsContent>
+                                    </Tabs>
 
-                                <Button onClick={handleGoogleSignIn} className="w-full bg-white text-black hover:bg-gray-200" disabled={isLoading}>
-                                <GoogleIcon />
-                                    Sign in with Google
-                                </Button>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
+                                    <div className="relative my-6">
+                                        <div className="absolute inset-0 flex items-center">
+                                            <span className="w-full border-t border-white/30" />
+                                        </div>
+                                        <div className="relative flex justify-center text-xs uppercase">
+                                            <span className="bg-black/40 px-2 text-white/80">
+                                                Or continue with
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <Button onClick={handleGoogleSignIn} className="w-full bg-white text-black hover:bg-gray-200" disabled={isLoading}>
+                                    <GoogleIcon />
+                                        Sign in with Google
+                                    </Button>
+                                </>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </div>
     );
@@ -190,6 +201,9 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
             let description = 'An unknown error occurred.';
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                 description = 'Invalid credentials. Please check your email and password.';
+            }
+            if (error.code === 'auth/operation-not-allowed') {
+                 description = 'Sign-in method is not enabled. Please enable it in your Firebase Console.';
             }
             toast({
                 variant: 'destructive',
@@ -283,6 +297,9 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
             } else if (error.code === 'auth/weak-password') {
                 description = 'The password is too weak. Please use a stronger password.';
             }
+            if (error.code === 'auth/operation-not-allowed') {
+                 description = 'Sign-up method is not enabled. Please enable it in your Firebase Console.';
+            }
             toast({
                 variant: 'destructive',
                 title: 'Sign Up Failed',
@@ -357,3 +374,5 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
         </Form>
     );
 }
+
+    
