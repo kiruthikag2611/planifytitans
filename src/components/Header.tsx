@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -7,7 +8,6 @@ import { ArrowLeft } from 'lucide-react';
 import { SidebarTrigger } from './ui/sidebar';
 import { useUser } from '@/firebase/auth/use-user';
 import { Skeleton } from './ui/skeleton';
-<<<<<<< HEAD
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { useFirestore } from '@/firebase/provider';
@@ -18,13 +18,6 @@ export function Header() {
   const router = useRouter();
   const { user, status } = useUser();
   const firestore = useFirestore();
-=======
-
-export function Header() {
-  const router = useRouter();
-  const [isClient, setIsClient] = React.useState(false);
-  const { user, status } = useUser();
->>>>>>> 669a409 (give the username in the right top of the desktop)
 
   const userDocRef = user && firestore ? doc(firestore, 'users', user.uid) : null;
 
@@ -39,7 +32,6 @@ export function Header() {
     return name[0].toUpperCase();
   };
 
-
   return (
     <header className="flex h-14 items-center justify-between gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6 sticky top-0 z-30">
       <div className="flex items-center gap-2">
@@ -48,7 +40,6 @@ export function Header() {
             <ArrowLeft className="h-5 w-5" />
         </Button>
       </div>
-<<<<<<< HEAD
       
       <div className="flex items-center gap-3">
         {status === 'loading' ? (
@@ -89,16 +80,11 @@ export function Header() {
                 </div>
               </PopoverContent>
             </Popover>
-        ) : null}
-=======
-      <div className="flex items-center gap-4">
-        {status === 'loading' && (
-          <Skeleton className="h-6 w-24" />
+        ) : (
+          <Button asChild>
+            <a href="/login">Sign In</a>
+          </Button>
         )}
-        {status === 'authenticated' && user && (
-            <span className="font-medium">{user.displayName}</span>
-        )}
->>>>>>> 669a409 (give the username in the right top of the desktop)
       </div>
     </header>
   );
