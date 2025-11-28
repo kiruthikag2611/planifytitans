@@ -57,8 +57,10 @@ const signInSchema = z.object({
   password: z.string().min(1, { message: 'Password is required.' }),
 });
 
-const signUpSchema = signInSchema.extend({
+const signUpSchema = z.object({
     displayName: z.string().min(1, { message: 'Name is required.' }),
+    email: z.string().email({ message: 'Please enter a valid email address.' }),
+    password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
 export default function LoginPage() {
@@ -367,5 +369,7 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
         </Form>
     );
 }
+
+    
 
     
