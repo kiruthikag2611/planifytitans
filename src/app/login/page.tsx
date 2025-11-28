@@ -179,6 +179,8 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     const { toast } = useToast();
     const auth = useAuth();
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const form = useForm<z.infer<typeof signInSchema>>({
         resolver: zodResolver(signInSchema),
         defaultValues: { email: '', password: '' },
@@ -187,6 +189,7 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     const handleEmailSubmit = async (data: z.infer<typeof signInSchema>) => {
         if (!auth) return;
         setIsLoading(true);
+        setError(null);
         try {
             await signInWithEmailAndPassword(auth, data.email, data.password);
             toast({ title: 'Login Successful', description: 'Redirecting...' });
@@ -200,11 +203,7 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
             if (error.code === 'auth/operation-not-allowed') {
                  description = 'Sign-in method is not enabled. Please enable it in your Firebase Console.';
             }
-            toast({
-                variant: 'destructive',
-                title: 'Sign In Failed',
-                description,
-            });
+            setError(description);
         } finally {
             setIsLoading(false);
         }
@@ -213,6 +212,13 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEmailSubmit)} className="space-y-4 mt-4">
+                 {error && (
+                    <Alert variant="destructive">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>Sign In Failed</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
                 <FormField
                     control={form.control}
                     name="email"
@@ -369,6 +375,8 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
         </Form>
     );
 }
+
+    
 
     
 
