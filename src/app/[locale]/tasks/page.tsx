@@ -70,6 +70,7 @@ const sampleActivities: ActivityWithTimes[] = [
         imageUrl: 'https://picsum.photos/seed/techfest/400/300',
         tags: ['fest', 'tech', 'competition'],
         rsvps: [],
+        attendees: [],
     },
     {
         activityId: 'sample-2',
@@ -83,6 +84,7 @@ const sampleActivities: ActivityWithTimes[] = [
         link: 'https://example.com/ai-workshop',
         tags: ['workshop', 'ai', 'learning'],
         rsvps: [],
+        attendees: [],
     },
 ];
 
@@ -107,6 +109,12 @@ export default function TasksAndActivitiesPage() {
     setActiveTab(value as 'tasks' | 'activities');
   }
 
+  const handleActivitySelect = (activity: ActivityWithTimes) => {
+      setSelectedActivity(activity);
+      setActivitySheetOpen(true);
+      setEventSheetOpen(false);
+  }
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
        <Tabs defaultValue={activeTab} onValueChange={handleTabChange} className="w-full">
@@ -128,7 +136,7 @@ export default function TasksAndActivitiesPage() {
         </TabsContent>
 
         <TabsContent value="activities">
-          <ActivitiesView onAddActivity={handleAddNew} />
+          <ActivitiesView onAddActivity={handleAddNew} onActivitySelect={handleActivitySelect} />
         </TabsContent>
       </Tabs>
 
@@ -138,11 +146,6 @@ export default function TasksAndActivitiesPage() {
               setActivitySheetOpen(false);
           }
       }}>
-        <SheetTrigger asChild>
-          <Button className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg" onClick={handleAddNew}>
-            <Plus className="h-8 w-8" />
-          </Button>
-        </SheetTrigger>
         <SheetContent className="sm:max-w-lg">
             {isEventSheetOpen && (
                 <>
@@ -253,10 +256,8 @@ function TaskCard({ task }: { task: any }) {
    Activities UI (Firestore-backed)
    ------------------------- */
 
-function ActivitiesView({ onAddActivity }: { onAddActivity: () => void }) {
+function ActivitiesView({ onAddActivity, onActivitySelect }: { onAddActivity: () => void, onActivitySelect: (activity: ActivityWithTimes) => void }) {
   const firestore = useFirestore();
-  const [selectedActivity, setSelectedActivity] = useState<ActivityWithTimes | null>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const activitiesQuery = useMemo(() => {
     if (!firestore) return null;
@@ -273,23 +274,12 @@ function ActivitiesView({ onAddActivity }: { onAddActivity: () => void }) {
     return sampleActivities;
   }, [fetchedActivities, loading]);
 
-
-  const handleActivityClick = (activity: ActivityWithTimes) => {
-    setSelectedActivity(activity);
-    setIsSheetOpen(true);
-  };
-  
-  const handleOpenSheet = (activity: ActivityWithTimes | null = null) => {
-    setSelectedActivity(activity);
-    setIsSheetOpen(true);
-  };
-
   const upcomingActivities = useMemo(
-    () => activities?.filter(a => isFuture(new Date(a.startTime || a.startDatetime || ''))) || [],
+    () => activities?.filter(a => isFuture(new Date(a.startDatetime || ''))) || [],
     [activities]
   );
   const pastActivities = useMemo(
-    () => activities?.filter(a => isPast(new Date(a.startTime || a.startDatetime || ''))) || [],
+    () => activities?.filter(a => isPast(new Date(a.startDatetime || ''))) || [],
     [activities]
   );
 
@@ -311,7 +301,7 @@ function ActivitiesView({ onAddActivity }: { onAddActivity: () => void }) {
                 <h3 className="text-lg font-semibold mb-2">Upcoming Activities</h3>
                 <div className="space-y-4">
                     {upcomingActivities.map(activity => (
-                    <ActivityCard key={activity.activityId} activity={activity} onClick={handleActivityClick} />
+                    <ActivityCard key={activity.activityId} activity={activity} onClick={onActivitySelect} />
                     ))}
                 </div>
                 </div>
@@ -321,7 +311,7 @@ function ActivitiesView({ onAddActivity }: { onAddActivity: () => void }) {
                     <h3 className="text-lg font-semibold mb-2">Past Activities</h3>
                     <div className="space-y-4">
                         {pastActivities.map(activity => (
-                        <ActivityCard key={activity.activityId} activity={activity} onClick={handleActivityClick} />
+                        <ActivityCard key={activity.activityId} activity={activity} onClick={onActivitySelect} />
                         ))}
                     </div>
                 </div>
@@ -330,23 +320,17 @@ function ActivitiesView({ onAddActivity }: { onAddActivity: () => void }) {
       ) : (
         <div className="text-center py-16">
           <p className="text-muted-foreground">No activities found.</p>
-          <Button className="mt-4" size="sm" onClick={() => handleOpenSheet()}>Add Activity</Button>
+          <Button className="mt-4" size="sm" onClick={onAddActivity}>Add Activity</Button>
         </div>
       )}
-
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="sm:max-w-lg">
-          <ActivitySheet activity={selectedActivity} onSave={() => setIsSheetOpen(false)} />
-        </SheetContent>
-      </Sheet>
     </div>
   );
 }
 
 /* Rich ActivityCard used in ActivitiesView */
 function ActivityCard({ activity, onClick }: { activity: ActivityWithTimes, onClick: (activity: ActivityWithTimes) => void }) {
-  const start = activity.startTime ?? activity.startDatetime;
-  const end = activity.endTime ?? activity.endDatetime;
+  const start = activity.startDatetime;
+  const end = activity.endDatetime;
   const isOngoing = new Date() >= new Date(start || 0) && new Date() <= new Date(end || 0);
   const badgeText = isOngoing ? 'Ongoing' : isToday(new Date(start || 0)) ? 'Today' : `in ${formatDistanceToNow(new Date(start || 0))}`;
 

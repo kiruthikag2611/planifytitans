@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
@@ -12,7 +12,7 @@ import Image from 'next/image';
 import { Calendar, Clock, MapPin, Building, Users, Link as LinkIcon, Share2, Bell, Plus, Bookmark } from 'lucide-react';
 import { useUser } from '@/firebase/auth/use-user';
 import { useFirestore } from '@/firebase/provider';
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, updateDoc, arrayUnion, arrayRemove, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -27,10 +27,13 @@ export function ActivitySheet({ activity, onSave }: ActivitySheetProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isRsvpd, setIsRsvpd] = React.useState(false);
+  const [isAddedToTimetable, setIsAddedToTimetable] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     if (activity && user) {
       setIsRsvpd(activity.rsvps?.includes(user.uid));
+      setIsAddedToTimetable(activity.attendees?.includes(user.uid));
     }
   }, [activity, user]);
 
@@ -66,6 +69,55 @@ export function ActivitySheet({ activity, onSave }: ActivitySheetProps) {
     }
   };
 
+  const handleAddToTimetable = async () => {
+    if (!activity || !user || !firestore) return;
+    setLoading(true);
+
+    const activityRef = doc(firestore, 'activities', activity.activityId);
+    const calendarEventsRef = collection(firestore, 'calendarEvents');
+
+    const eventPayload = {
+      userId: user.uid,
+      title: activity.title,
+      type: 'Activity' as const,
+      description: activity.description,
+      date: format(parseISO(activity.startDatetime), 'yyyy-MM-dd'),
+      startTime: format(parseISO(activity.startDatetime), 'HH:mm'),
+      endTime: format(parseISO(activity.endDatetime), 'HH:mm'),
+      priority: 'medium' as const,
+      difficultyLevel: 'easy' as const,
+      notificationEnabled: true,
+      reminderTime: '30min' as const,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
+
+    const attendeePayload = {
+        attendees: arrayUnion(user.uid)
+    };
+
+    try {
+        await addDoc(calendarEventsRef, eventPayload);
+        await updateDoc(activityRef, attendeePayload);
+
+        setIsAddedToTimetable(true);
+        toast({
+            title: 'Added to Timetable!',
+            description: `"${activity.title}" is now on your calendar.`,
+        });
+        onSave();
+    } catch (error) {
+         toast({
+            variant: 'destructive',
+            title: 'Failed to add to timetable.',
+            description: 'Please check your connection and try again.'
+        });
+    } finally {
+        setLoading(false);
+    }
+  };
+
+
   if (!activity) {
     return (
       <div>
@@ -95,8 +147,8 @@ export function ActivitySheet({ activity, onSave }: ActivitySheetProps) {
 
         <div className="overflow-y-auto flex-1 p-4 space-y-4">
             <div className="space-y-3">
-                <InfoItem icon={Calendar} label="Date" content={format(new Date(activity.startDatetime), 'EEEE, MMMM d, yyyy')} />
-                <InfoItem icon={Clock} label="Time" content={`${format(new Date(activity.startDatetime), 'p')} - ${format(new Date(activity.endDatetime), 'p')}`} />
+                <InfoItem icon={Calendar} label="Date" content={format(parseISO(activity.startDatetime), 'EEEE, MMMM d, yyyy')} />
+                <InfoItem icon={Clock} label="Time" content={`${format(parseISO(activity.startDatetime), 'p')} - ${format(parseISO(activity.endDatetime), 'p')}`} />
                 <InfoItem icon={MapPin} label="Location" content={<a href={mapLink} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">{activity.location}</a>} />
                 <InfoItem icon={Building} label="Organizer" content={activity.organizer} />
                 <InfoItem icon={Users} label="Attendees" content={`${activity.rsvps?.length || 0} going`} />
@@ -119,7 +171,10 @@ export function ActivitySheet({ activity, onSave }: ActivitySheetProps) {
                         <Bookmark className={`mr-2 h-4 w-4 ${isRsvpd ? 'fill-current' : ''}`} />
                         {isRsvpd ? 'I\'m Going' : 'Interested'}
                     </Button>
-                    <Button><Plus className="mr-2 h-4 w-4" /> Add to Timetable</Button>
+                    <Button onClick={handleAddToTimetable} disabled={loading || isAddedToTimetable}>
+                        <Plus className="mr-2 h-4 w-4" /> 
+                        {isAddedToTimetable ? 'Added' : 'Add to Timetable'}
+                    </Button>
                     <Button variant="outline"><Bell className="mr-2 h-4 w-4" /> Add Reminder</Button>
                     <Button variant="outline"><Share2 className="mr-2 h-4 w-4" /> Share</Button>
                  </div>
@@ -140,4 +195,3 @@ function InfoItem({ icon: Icon, label, content }: { icon: React.ElementType, lab
         </div>
     );
 }
-    

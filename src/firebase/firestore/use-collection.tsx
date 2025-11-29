@@ -5,7 +5,6 @@ import {
   collection,
   onSnapshot,
   query,
-  where,
   Query,
   DocumentData,
   FirestoreError,
@@ -54,8 +53,8 @@ export function useCollection<T>(
         snapshot.forEach((doc) => {
           const docData = doc.data();
           // Use a consistent ID property, preferring a field like eventId or activityId, but falling back to the document ID.
-          const docId = docData.eventId || docData.activityId || doc.id;
-          result.push({ ...docData, id: docId, eventId: docId } as T);
+          const docId = docData.activityId || doc.id;
+          result.push({ ...docData, id: docId, activityId: docId } as T);
         });
         
         setData(prevData => {

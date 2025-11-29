@@ -11,7 +11,7 @@ import { useFirestore } from '@/firebase/provider';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Plus, Sparkles } from 'lucide-react';
+import { ArrowLeft, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { CalendarEvent, Activity } from '@/lib/types';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -91,18 +91,21 @@ export default function DailyTimetablePage() {
 
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
+    setSelectedActivity(null);
     setSheetType('event');
     setIsSheetOpen(true);
   };
 
   const handleActivityClick = (activity: Activity) => {
     setSelectedActivity(activity);
+    setSelectedEvent(null);
     setSheetType('activity');
     setIsSheetOpen(true);
   };
   
   const handleAddEvent = () => {
     setSelectedEvent(null);
+    setSelectedActivity(null);
     setSheetType('event');
     setIsSheetOpen(true);
   }
@@ -190,7 +193,7 @@ export default function DailyTimetablePage() {
                 <EventForm event={selectedEvent} onSave={() => setIsSheetOpen(false)} selectedDate={selectedDate}/>
               </>
             )}
-             {sheetType === 'activity' && (
+             {sheetType === 'activity' && selectedActivity && (
                 <ActivitySheet activity={selectedActivity} onSave={() => setIsSheetOpen(false)} />
              )}
           </SheetContent>
@@ -199,6 +202,3 @@ export default function DailyTimetablePage() {
     </div>
   );
 }
-    
-
-    

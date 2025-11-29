@@ -2,10 +2,8 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
   Plus,
@@ -15,13 +13,13 @@ import {
   startOfMonth,
   endOfMonth,
   eachDayOfInterval,
-  isToday,
   isSameMonth,
   addMonths,
   subMonths,
   startOfWeek,
   addDays,
   isSameDay,
+  parseISO,
 } from 'date-fns';
 
 import { useUser } from '@/firebase/auth/use-user';
@@ -83,8 +81,8 @@ export default function CalendarPage() {
   });
 
   const hasEvents = (day: Date) => {
-    const eventExists = events?.some((e) => isSameDay(new Date(e.date), day)) || false;
-    const activityExists = activities?.some(a => isSameDay(new Date(a.startDatetime), day)) || false;
+    const eventExists = events?.some((e) => isSameDay(parseISO(e.date), day)) || false;
+    const activityExists = activities?.some(a => isSameDay(parseISO(a.startDatetime), day)) || false;
     return eventExists || activityExists;
   };
   
@@ -188,4 +186,3 @@ export default function CalendarPage() {
     </div>
   );
 }
-    

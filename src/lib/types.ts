@@ -37,6 +37,5 @@ export type Activity = {
     link?: string;
     tags: string[];
     rsvps: string[];
+    attendees: string[];
 }
-
-    
