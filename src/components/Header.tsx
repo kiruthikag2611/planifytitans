@@ -59,7 +59,7 @@ export default function Header(): JSX.Element {
         <div className="hidden md:block">
           <h1 className="text-xl font-semibold">Planify</h1>
           <p className="text-xs text-muted-foreground -mt-1">
-            Smarter Schedule, Smoother Days
+            Smarter Schedule, Smoother Days!
           </p>
         </div>
       </div>
@@ -144,5 +144,3 @@ export default function Header(): JSX.Element {
     </header>
   );
 }
-
-    

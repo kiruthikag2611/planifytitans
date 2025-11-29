@@ -41,7 +41,7 @@ export default function Home() {
           
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight font-headline mt-4">Planify</h1>
           <p className="text-lg md:text-xl mt-4 max-w-md">
-            Smarter Schedule, Smoother Days.
+            Smarter Schedule, Smoother Days!
           </p>
           <div className="mt-8">
             <Button onClick={handleGetStarted} size="lg" className="shadow-lg hover:shadow-primary/20 transition-shadow duration-300">

@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Inter, Poppins } from 'next/font/google';
@@ -13,7 +14,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: 'Planify',
-  description: 'Smarter Schedule, Smoother Days.',
+  description: 'Smarter Schedule, Smoother Days!',
 };
 
 export default function RootLayout({
