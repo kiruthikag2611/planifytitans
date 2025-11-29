@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Plus, Search, Filter, Check, Clock, Edit, Users, MapPin, Building, Calendar as CalendarIcon, Bookmark } from "lucide-react";
+import { Plus, Check, Clock, Edit, Users, MapPin, Building, Calendar as CalendarIcon, Bookmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useState, useEffect, useMemo } from "react";
@@ -87,12 +87,13 @@ const sampleActivities: ActivityWithTimes[] = [
 ];
 
 export default function TasksAndActivitiesPage() {
+  const [activeTab, setActiveTab] = useState<'tasks' | 'activities'>('activities');
   const [isEventSheetOpen, setEventSheetOpen] = useState(false);
   const [isActivitySheetOpen, setActivitySheetOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ActivityWithTimes | null>(null);
 
-  const handleAddNew = (tab: 'tasks' | 'activities') => {
-    if (tab === 'tasks') {
+  const handleAddNew = () => {
+    if (activeTab === 'tasks') {
         setActivitySheetOpen(false);
         setEventSheetOpen(true);
     } else {
@@ -101,18 +102,22 @@ export default function TasksAndActivitiesPage() {
         setActivitySheetOpen(true);
     }
   };
+  
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as 'tasks' | 'activities');
+  }
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-       <Tabs defaultValue="activities" className="w-full">
+       <Tabs defaultValue={activeTab} onValueChange={handleTabChange} className="w-full">
         <div className="flex items-center justify-between space-y-2">
             <h2 className="text-3xl font-bold tracking-tight">Tasks & Activities</h2>
             <div className="flex items-center space-x-2">
                 <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="tasks" onClick={() => handleAddNew('tasks')}>Tasks</TabsTrigger>
-                    <TabsTrigger value="activities" onClick={() => handleAddNew('activities')}>Activities</TabsTrigger>
+                    <TabsTrigger value="tasks">Tasks</TabsTrigger>
+                    <TabsTrigger value="activities">Activities</TabsTrigger>
                 </TabsList>
-                 <Button onClick={() => handleAddNew(document.querySelector('[data-state=active]')?.getAttribute('data-radix-collection-item') === 'tasks' ? 'tasks' : 'activities')}>
+                 <Button onClick={handleAddNew}>
                     <Plus className="mr-2 h-4 w-4" /> Add New
                 </Button>
             </div>
@@ -123,11 +128,10 @@ export default function TasksAndActivitiesPage() {
         </TabsContent>
 
         <TabsContent value="activities">
-          <ActivitiesView onAddActivity={() => handleAddNew('activities')} />
+          <ActivitiesView onAddActivity={handleAddNew} />
         </TabsContent>
       </Tabs>
 
-      {/* Floating add button */}
       <Sheet open={isEventSheetOpen || isActivitySheetOpen} onOpenChange={(open) => {
           if (!open) {
               setEventSheetOpen(false);
@@ -135,7 +139,7 @@ export default function TasksAndActivitiesPage() {
           }
       }}>
         <SheetTrigger asChild>
-          <Button className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg" onClick={() => handleAddNew(document.querySelector('[data-state=active]')?.getAttribute('data-radix-collection-item') === 'tasks' ? 'tasks' : 'activities')}>
+          <Button className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg" onClick={handleAddNew}>
             <Plus className="h-8 w-8" />
           </Button>
         </SheetTrigger>
@@ -375,5 +379,3 @@ function ActivityCard({ activity, onClick }: { activity: ActivityWithTimes, onCl
     </Card>
   );
 }
-
-    
