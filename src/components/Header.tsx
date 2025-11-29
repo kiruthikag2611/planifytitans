@@ -72,7 +72,6 @@ export default function Header(): JSX.Element {
               </div>
               <div className="hidden sm:flex flex-col text-right">
                 <span className="font-medium text-sm">{user.displayName}</span>
-                <span className="text-xs text-muted-foreground">{user.email}</span>
               </div>
             </div>
 
