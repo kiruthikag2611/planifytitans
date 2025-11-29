@@ -56,13 +56,13 @@ const GoogleIcon = () => (
 
 const signInSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z.string().min(1, { message: 'Password is required.' }),
+  password: z.string().min(1, { message: 'Password cannot be empty.' }),
 });
 
 const signUpSchema = z.object({
     displayName: z.string().min(1, { message: 'Name is required.' }),
     email: z.string().email({ message: 'Please enter a valid email address.' }),
-    password: z.string().min(6, { message: 'Password must be at least 6 characters long.' }),
+    password: z.string().min(8, { message: 'Password must be at least 8 characters long.' }),
 });
 
 export default function LoginPage() {
@@ -209,6 +209,8 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
             let description = 'An unknown error occurred.';
             if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                 description = 'Invalid credentials. Please check your email and password.';
+            } else if (error.code === 'auth/invalid-email') {
+                description = 'Please enter a valid email address.';
             }
             setError(description);
         } finally {
@@ -384,3 +386,5 @@ function SignUpForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
         </Form>
     );
 }
+
+    

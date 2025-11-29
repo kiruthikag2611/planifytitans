@@ -23,7 +23,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useFirestore } from '@/firebase/provider';
-import { doc, getDoc } from 'firebase/firestore';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { ChangePasswordDialog } from './ChangePasswordDialog';
 
 type UserProfile = {
   answers?: Record<string, any>;
@@ -46,12 +47,6 @@ export default function Header(): JSX.Element {
 
   const showBackButton = isClient && pathname !== '/dashboard';
 
-  const handlePasswordChange = () => {
-    // In a real app, this would trigger a password reset flow.
-    // For now, we can just log it or show a toast.
-    alert('A password reset link would be sent in a real application.');
-  };
-
   return (
     <header className="w-full border-b bg-background/60 backdrop-blur-sm p-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -72,69 +67,74 @@ export default function Header(): JSX.Element {
         {status === 'loading' ? (
           <div className="text-sm text-muted-foreground">Loading...</div>
         ) : user ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-3 h-auto p-1 rounded-full">
-                <div className="flex items-center gap-2">
-                  <div className="h-9 w-9 rounded-full overflow-hidden bg-muted">
-                    {user.photoURL ? (
-                      <Image
-                        src={user.photoURL}
-                        alt={user.displayName ?? 'Avatar'}
-                        width={36}
-                        height={36}
-                        style={{ objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                        {user.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
-                      </div>
-                    )}
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-3 h-auto p-1 rounded-full">
+                  <div className="flex items-center gap-2">
+                    <div className="h-9 w-9 rounded-full overflow-hidden bg-muted">
+                      {user.photoURL ? (
+                        <Image
+                          src={user.photoURL}
+                          alt={user.displayName ?? 'Avatar'}
+                          width={36}
+                          height={36}
+                          style={{ objectFit: 'cover' }}
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                          {user.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
+                        </div>
+                      )}
+                    </div>
+                    <div className="hidden sm:flex flex-col text-right">
+                      <span className="font-medium text-sm">{user.displayName}</span>
+                    </div>
                   </div>
-                  <div className="hidden sm:flex flex-col text-right">
-                    <span className="font-medium text-sm">{user.displayName}</span>
-                  </div>
-                </div>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64" align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>View My Answers</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent className="max-h-80 overflow-y-auto">
-                    <DropdownMenuLabel>Questionnaire Responses</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {userProfile?.answers ? (
-                       Object.entries(userProfile.answers).map(([key, value]) => (
-                        <DropdownMenuItem key={key} className="flex flex-col items-start gap-1">
-                          <span className="text-xs text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</span>
-                          <span className="font-medium text-sm">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
-                        </DropdownMenuItem>
-                      ))
-                    ) : (
-                      <DropdownMenuItem>No answers found.</DropdownMenuItem>
-                    )}
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/tools/settings">
-                  <Edit className="mr-2 h-4 w-4" />
-                  <span>Edit Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handlePasswordChange}>
-                <KeyRound className="mr-2 h-4 w-4" />
-                <span>Change Password</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-64" align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                 <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>View My Answers</span>
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent className="max-h-80 overflow-y-auto">
+                      <DropdownMenuLabel>Questionnaire Responses</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {userProfile?.answers ? (
+                         Object.entries(userProfile.answers).map(([key, value]) => (
+                          <DropdownMenuItem key={key} className="flex flex-col items-start gap-1">
+                            <span className="text-xs text-muted-foreground capitalize">{key.replace(/_/g, ' ')}</span>
+                            <span className="font-medium text-sm">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
+                          </DropdownMenuItem>
+                        ))
+                      ) : (
+                        <DropdownMenuItem>No answers found.</DropdownMenuItem>
+                      )}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/tools/settings">
+                    <Edit className="mr-2 h-4 w-4" />
+                    <span>Edit Profile</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem>
+                    <KeyRound className="mr-2 h-4 w-4" />
+                    <span>Change Password</span>
+                  </DropdownMenuItem>
+                </DialogTrigger>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <ChangePasswordDialog />
+          </Dialog>
         ) : (
           <Link href="/login">
             <Button size="sm">Sign in</Button>
@@ -144,3 +144,5 @@ export default function Header(): JSX.Element {
     </header>
   );
 }
+
+    
