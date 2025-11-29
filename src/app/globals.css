@@ -25,7 +25,7 @@
     --input: 250 30% 85%;
     --ring: 250 50% 40%;
     --radius: 0.5rem;
-    --sidebar-background: 215 30% 15%;
+    --sidebar-background: 220 40% 12%;
     --sidebar-foreground: 0 0% 98%;
   }
 
@@ -50,7 +50,7 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
     --radius: 0.5rem;
-    --sidebar-background: 215 30% 11%;
+    --sidebar-background: 220 40% 12%;
     --sidebar-foreground: 0 0% 98%;
   }
 }
