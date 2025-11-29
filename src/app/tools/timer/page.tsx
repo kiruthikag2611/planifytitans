@@ -3,12 +3,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { Play, Pause, RotateCw, Volume2, VolumeX, ArrowLeft } from "lucide-react";
+import { Play, Pause, RotateCw, Volume2, VolumeX } from "lucide-react";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const presets = {
   pomodoro: { time: 25 * 60, label: "Pomodoro (25/5)" },
@@ -17,7 +15,6 @@ const presets = {
 };
 
 export default function FocusTimerPage() {
-  const router = useRouter();
   const [activePreset, setActivePreset] = useState("pomodoro");
   const [timer, setTimer] = useState(presets.pomodoro.time);
   const [isActive, setIsActive] = useState(false);
@@ -70,9 +67,6 @@ export default function FocusTimerPage() {
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6 flex flex-col items-center">
         <div className="w-full max-w-md relative mb-4">
-             <Button variant="ghost" size="icon" onClick={() => router.back()} className="absolute -left-14 top-1">
-                <ArrowLeft className="h-5 w-5" />
-            </Button>
         </div>
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader>

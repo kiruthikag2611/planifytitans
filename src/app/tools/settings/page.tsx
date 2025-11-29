@@ -10,15 +10,10 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
 
 export default function SettingsPage() {
     const { theme, setTheme } = useTheme()
     const [mounted, setMounted] = React.useState(false)
-    const router = useRouter();
 
     React.useEffect(() => {
         setMounted(true)
@@ -31,9 +26,6 @@ export default function SettingsPage() {
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={() => router.back()}>
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
                 <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Settings</h2>
             </div>
            

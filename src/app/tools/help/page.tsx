@@ -5,9 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LifeBuoy, Mail, Video, FileQuestion, MessageSquareWarning, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { FileQuestion, MessageSquareWarning, Video } from "lucide-react";
 
 const faqs = [
   {
@@ -29,13 +27,9 @@ const faqs = [
 ];
 
 export default function HelpCenterPage() {
-  const router = useRouter();
   return (
     <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
        <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.back()}>
-                <ArrowLeft className="h-5 w-5" />
-            </Button>
           <div className="text-left">
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Help Center</h2>
               <p className="text-muted-foreground mt-1">How can we help you today?</p>
