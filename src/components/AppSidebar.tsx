@@ -4,10 +4,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { Home, Calendar, List, Settings, User } from 'lucide-react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/use-user';
 import { getAuth, signOut } from 'firebase/auth';
+import Image from 'next/image';
 
 export default function AppSidebar(): JSX.Element {
   const { user, status } = useUser();
@@ -43,15 +43,9 @@ export default function AppSidebar(): JSX.Element {
         <Link href="/schedule" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
           <Calendar className="h-4 w-4" /> <span>Timetable</span>
         </Link>
-        <Link href="/profile" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
-          <User className="h-4 w-4" /> <span>Profile</span>
-        </Link>
-        <Link href="/settings" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
-          <Settings className="h-4 w-4" /> <span>Settings</span>
-        </Link>
       </nav>
 
-      <div className="mt-6">
+      <div className="mt-auto">
         {status === 'loading' ? (
           <div className="text-sm text-muted-foreground">Loading...</div>
         ) : user ? (
@@ -66,8 +60,8 @@ export default function AppSidebar(): JSX.Element {
               )}
             </div>
             <div className="flex-1">
-              <div className="text-sm">{user.displayName ?? 'User'}</div>
-              <div className="text-xs text-muted-foreground">{user.email ?? ''}</div>
+              <div className="text-sm font-medium truncate">{user.displayName ?? 'User'}</div>
+              <div className="text-xs text-muted-foreground truncate">{user.email ?? ''}</div>
             </div>
             <Button size="sm" variant="ghost" onClick={handleSignOut}>Sign out</Button>
           </div>

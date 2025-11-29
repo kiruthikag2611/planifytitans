@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/use-user';
 import { getAuth, signOut } from 'firebase/auth';
+import { SidebarTrigger } from './ui/sidebar';
 
 export default function Header(): JSX.Element {
   const { user, status } = useUser();
@@ -21,60 +22,53 @@ export default function Header(): JSX.Element {
   };
 
   return (
-    <header className="w-full border-b bg-background/60 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between p-4 md:p-6">
-        
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex flex-col leading-tight">
-            <span className="text-xl font-semibold">Planify</span>
-            <span className="text-xs text-muted-foreground -mt-1">
+    <header className="w-full border-b bg-background/60 backdrop-blur-sm p-4 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+         <SidebarTrigger className="md:hidden"/>
+         <div className="hidden md:block">
+            <h1 className="text-xl font-semibold">Planify</h1>
+            <p className="text-xs text-muted-foreground -mt-1">
               Smarter Schedule, Smoother Days
-            </span>
-          </div>
-        </Link>
-
-        <nav className="flex items-center gap-3">
-          <Link href="/tasks" className="hidden md:inline-block">
-            <Button variant="ghost" size="sm">Tasks</Button>
-          </Link>
-
-          <Link href="/calendar" className="hidden md:inline-block">
-            <Button variant="ghost" size="sm">Calendar</Button>
-          </Link>
-
-          {status === 'loading' ? (
-            <div className="text-sm text-muted-foreground">Loading...</div>
-          ) : user ? (
-            <div className="flex items-center gap-3">
-              <Link href="/profile" className="flex items-center gap-2">
-                <div className="h-9 w-9 rounded-full overflow-hidden bg-muted">
-                  {user.photoURL ? (
-                    <Image
-                      src={user.photoURL}
-                      alt={user.displayName ?? 'Avatar'}
-                      width={36}
-                      height={36}
-                      style={{ objectFit: 'cover' }}
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                      {user.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
-                    </div>
-                  )}
-                </div>
-              </Link>
-
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                Sign out
-              </Button>
-            </div>
-          ) : (
-            <Link href="/login">
-              <Button size="sm">Sign in</Button>
-            </Link>
-          )}
-        </nav>
+            </p>
+         </div>
       </div>
+      <nav className="flex items-center gap-3">
+        {status === 'loading' ? (
+          <div className="text-sm text-muted-foreground">Loading...</div>
+        ) : user ? (
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="h-9 w-9 rounded-full overflow-hidden bg-muted">
+                {user.photoURL ? (
+                  <Image
+                    src={user.photoURL}
+                    alt={user.displayName ?? 'Avatar'}
+                    width={36}
+                    height={36}
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                    {user.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
+                  </div>
+                )}
+              </div>
+              <div className="hidden sm:flex flex-col text-right">
+                <span className="font-medium text-sm">{user.displayName}</span>
+                <span className="text-xs text-muted-foreground">{user.email}</span>
+              </div>
+            </div>
+
+            <Button variant="outline" size="sm" onClick={handleSignOut}>
+              Sign out
+            </Button>
+          </div>
+        ) : (
+          <Link href="/login">
+            <Button size="sm">Sign in</Button>
+          </Link>
+        )}
+      </nav>
     </header>
   );
 }
