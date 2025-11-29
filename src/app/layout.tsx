@@ -14,7 +14,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: 'Planify',
-  description: 'Smarter Schedule, Smoother Days!',
+  description: 'Smarter Schedule! Smoother Days!',
 };
 
 export default function RootLayout({
