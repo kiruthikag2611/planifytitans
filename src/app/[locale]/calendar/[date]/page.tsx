@@ -74,7 +74,17 @@ export default function DailyTimetablePage() {
   const { data: allActivities } = useCollection<Activity>(activitiesQuery);
 
   const activities = React.useMemo(() => {
-    return allActivities?.filter(a => format(parseISO(a.startDatetime), 'yyyy-MM-dd') === formattedDate) || [];
+    if (!allActivities) return [];
+    const activitiesOnDate = allActivities.filter(a => {
+        try {
+            const activityDate = format(parseISO(a.startDatetime), 'yyyy-MM-dd');
+            return activityDate === formattedDate;
+        } catch (e) {
+            console.warn(`Invalid date format for activity ${a.activityId}: ${a.startDatetime}`);
+            return false;
+        }
+    });
+    return activitiesOnDate;
   }, [allActivities, formattedDate]);
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
@@ -113,7 +123,7 @@ export default function DailyTimetablePage() {
   return (
     <div className="flex flex-col h-screen">
        <header className="p-4 border-b flex items-center justify-between sticky top-0 bg-background/95 z-10">
-         <Button variant="ghost" size="icon" onClick={() => router.push('/calendar')}>
+         <Button variant="ghost" size="icon" onClick={() => router.back()}>
            <ArrowLeft className="h-5 w-5" />
          </Button>
          <h2 className="text-lg sm:text-xl font-bold text-center">
@@ -189,4 +199,6 @@ export default function DailyTimetablePage() {
     </div>
   );
 }
+    
+
     

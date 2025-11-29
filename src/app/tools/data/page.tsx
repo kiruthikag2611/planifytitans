@@ -5,11 +5,17 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { UploadCloud, DownloadCloud, Scan, FileJson, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function DataPage() {
+    const router = useRouter();
+
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center gap-4">
+                 <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
                 <h2 className="text-xl sm:text-3xl font-bold tracking-tight">Data Import / Export</h2>
             </div>
 
@@ -61,3 +67,5 @@ export default function DataPage() {
         </div>
     )
 }
+
+    

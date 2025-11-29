@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { EventForm } from "@/components/calendar/EventForm"
+import { useRouter } from "next/navigation"
 
 const upcomingExams = [
     { subject: "Quantum Physics", date: "Dec 12, 2024", time: "10:00 AM", room: "A-101", color: "bg-blue-500" },
@@ -29,9 +30,14 @@ const studyPlan = [
 ];
 
 export default function ExamsPage() {
+    const router = useRouter();
+
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 relative">
             <div className="flex items-center gap-4">
+                <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
                 <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2"><Brain className="h-8 w-8 text-primary"/>Thinkathon</h2>
             </div>
 
@@ -156,3 +162,5 @@ export default function ExamsPage() {
         </div>
     )
 }
+
+    
