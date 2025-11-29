@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Home, Calendar, List, Settings, User } from 'lucide-react';
+import { Home, Calendar, List, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/use-user';
 import { getAuth, signOut } from 'firebase/auth';
@@ -22,20 +22,18 @@ export default function AppSidebar(): JSX.Element {
   };
 
   return (
-    <aside className="w-64 border-r bg-muted/60 p-4">
-      <div className="mb-6 flex items-center gap-3">
-        <div>
+    <aside className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+      <div className="p-4">
           <h3 className="text-lg font-semibold">Planify</h3>
           <p className="text-xs text-muted-foreground">Plan smarter</p>
-        </div>
       </div>
 
-      <nav className="flex flex-col gap-2">
+      <nav className="flex flex-col gap-2 p-4">
         <Link href="/dashboard" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
           <Home className="h-4 w-4" /> <span>Dashboard</span>
         </Link>
         <Link href="/tasks" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
-          <List className="h-4 w-4" /> <span>Tasks</span>
+          <List className="h-4 w-4" /> <span>Tasks & Activities</span>
         </Link>
         <Link href="/calendar" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
           <Calendar className="h-4 w-4" /> <span>Calendar</span>
@@ -43,9 +41,12 @@ export default function AppSidebar(): JSX.Element {
         <Link href="/schedule" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
           <Calendar className="h-4 w-4" /> <span>Timetable</span>
         </Link>
+        <Link href="/tasks/exams" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
+          <Brain className="h-4 w-4" /> <span>Thinkathon</span>
+        </Link>
       </nav>
 
-      <div className="mt-auto">
+      <div className="mt-auto p-4 border-t border-sidebar/20">
         {status === 'loading' ? (
           <div className="text-sm text-muted-foreground">Loading...</div>
         ) : user ? (
