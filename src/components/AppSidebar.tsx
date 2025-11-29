@@ -69,24 +69,27 @@ export default function AppSidebar(): JSX.Element {
         {status === 'loading' ? (
           <div className="text-sm text-muted-foreground p-2">Loading...</div>
         ) : user ? (
-          <div className="flex items-center gap-2 p-2">
-            <div className="h-8 w-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
-              {user.photoURL ? (
-                <Image src={user.photoURL} alt={user.displayName ?? 'Avatar'} width={32} height={32} />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                  {user.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 p-2">
+                <div className="h-8 w-8 rounded-full overflow-hidden bg-muted flex-shrink-0">
+                {user.photoURL ? (
+                    <Image src={user.photoURL} alt={user.displayName ?? 'Avatar'} width={32} height={32} />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                    {user.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
+                    </div>
+                )}
                 </div>
-              )}
+                {state === 'expanded' && (
+                    <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">{user.displayName ?? 'User'}</div>
+                    <div className="text-xs text-muted-foreground truncate">{user.email ?? ''}</div>
+                    </div>
+                )}
             </div>
-            {state === 'expanded' && (
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">{user.displayName ?? 'User'}</div>
-                  <div className="text-xs text-muted-foreground truncate">{user.email ?? ''}</div>
-                </div>
-            )}
-            <Button size="icon" variant="ghost" onClick={handleSignOut} className="flex-shrink-0">
-                <Power className="h-4 w-4" />
+            <Button variant="ghost" className="w-full justify-start" onClick={handleSignOut}>
+                <Power className="mr-2 h-4 w-4" />
+                {state === 'expanded' && <span>Logout</span>}
             </Button>
           </div>
         ) : (
