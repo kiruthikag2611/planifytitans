@@ -35,9 +35,6 @@ export default function ExamsPage() {
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6 relative">
             <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" onClick={() => router.back()}>
-                    <ArrowLeft className="h-5 w-5" />
-                </Button>
                 <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2"><Brain className="h-8 w-8 text-primary"/>Thinkathon</h2>
             </div>
 
