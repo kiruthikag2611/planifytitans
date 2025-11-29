@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Home, Calendar, List, Brain } from 'lucide-react';
+import { Home, Calendar, List, Brain, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/use-user';
 import { getAuth, signOut } from 'firebase/auth';
@@ -43,6 +43,9 @@ export default function AppSidebar(): JSX.Element {
         </Link>
         <Link href="/tasks/exams" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
           <Brain className="h-4 w-4" /> <span>Thinkathon</span>
+        </Link>
+        <Link href="/tools" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
+          <Settings className="h-4 w-4" /> <span>Tools</span>
         </Link>
       </nav>
 
