@@ -6,7 +6,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/use-user';
-import { getAuth, signOut } from 'firebase/auth';
 import { SidebarTrigger } from './ui/sidebar';
 import { ArrowLeft } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -20,15 +19,6 @@ export default function Header(): JSX.Element {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const handleSignOut = async () => {
-    try {
-      const auth = getAuth();
-      await signOut(auth);
-    } catch (err) {
-      console.error('Sign-out failed:', err);
-    }
-  };
 
   // Only show back button if on a client and not on the dashboard page
   const showBackButton = isClient && pathname !== '/dashboard';
@@ -74,10 +64,6 @@ export default function Header(): JSX.Element {
                 <span className="font-medium text-sm">{user.displayName}</span>
               </div>
             </div>
-
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              Sign out
-            </Button>
           </div>
         ) : (
           <Link href="/login">
