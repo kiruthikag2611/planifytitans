@@ -19,6 +19,7 @@ import { ActivitySheet } from "@/components/calendar/ActivitySheet";
 import Image from "next/image";
 import { format, isToday, isFuture, isPast, formatDistanceToNow } from 'date-fns';
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUser } from "@/firebase/auth/use-user";
 
 /**
  * Local extended Activity type to avoid TS errors while rebasing.
@@ -258,21 +259,23 @@ function TaskCard({ task }: { task: any }) {
 
 function ActivitiesView({ onAddActivity, onActivitySelect }: { onAddActivity: () => void, onActivitySelect: (activity: ActivityWithTimes) => void }) {
   const firestore = useFirestore();
+  const { user } = useUser();
 
   const activitiesQuery = useMemo(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     return query(collection(firestore, 'activities'));
-  }, [firestore]);
+  }, [firestore, user]);
 
   const { data: fetchedActivities, loading } = useCollection<ActivityWithTimes>(activitiesQuery);
 
   const activities = useMemo(() => {
-    if (loading) return [];
-    if (fetchedActivities && fetchedActivities.length > 0) {
+    if (loading || !fetchedActivities) return [];
+    if (fetchedActivities.length > 0) {
         return fetchedActivities;
     }
-    return sampleActivities;
-  }, [fetchedActivities, loading]);
+    // Only show sample activities if there's no user (to avoid flash of samples on load)
+    return !user ? sampleActivities : [];
+  }, [fetchedActivities, loading, user]);
 
   const upcomingActivities = useMemo(
     () => activities?.filter(a => isFuture(new Date(a.startDatetime || ''))) || [],

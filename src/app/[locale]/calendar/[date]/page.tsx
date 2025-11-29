@@ -65,10 +65,10 @@ export default function DailyTimetablePage() {
   }, [user, firestore, formattedDate]);
 
   const activitiesQuery = React.useMemo(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     // We fetch all activities and filter client-side for the selected date
     return query(collection(firestore, 'activities'));
-  }, [firestore]);
+  }, [firestore, user]);
 
   const { data: events } = useCollection<CalendarEvent>(eventsQuery);
   const { data: allActivities } = useCollection<Activity>(activitiesQuery);

@@ -63,9 +63,9 @@ export default function CalendarPage() {
   }, [user, firestore]);
 
    const activitiesQuery = React.useMemo(() => {
-    if (!firestore) return null;
+    if (!firestore || !user) return null;
     return query(collection(firestore, 'activities'));
-  }, [firestore]);
+  }, [firestore, user]);
 
   const { data: events, loading: eventsLoading } = useCollection<CalendarEvent>(eventsQuery);
   const { data: activities, loading: activitiesLoading } = useCollection<Activity>(activitiesQuery);
