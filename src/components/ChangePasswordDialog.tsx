@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
 
 const passwordSchema = z
   .object({
@@ -54,6 +54,10 @@ export function ChangePasswordDialog() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
@@ -154,9 +158,18 @@ export function ChangePasswordDialog() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Current Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
+                <div className="relative">
+                  <FormControl>
+                    <Input type={showCurrentPassword ? 'text' : 'password'} {...field} />
+                  </FormControl>
+                  <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3"
+                  >
+                      {showCurrentPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                  </button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -167,9 +180,18 @@ export function ChangePasswordDialog() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>New Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
+                 <div className="relative">
+                  <FormControl>
+                    <Input type={showNewPassword ? 'text' : 'password'} {...field} />
+                  </FormControl>
+                   <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3"
+                  >
+                      {showNewPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                  </button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -180,9 +202,18 @@ export function ChangePasswordDialog() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Confirm New Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} />
-                </FormControl>
+                 <div className="relative">
+                  <FormControl>
+                    <Input type={showConfirmPassword ? 'text' : 'password'} {...field} />
+                  </FormControl>
+                   <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3"
+                  >
+                      {showConfirmPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                  </button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
