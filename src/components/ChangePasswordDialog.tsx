@@ -9,9 +9,11 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import { useUser } from '@/firebase/auth/use-user';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/firebase/provider';
 
 import {
   DialogContent,
@@ -47,9 +49,11 @@ const passwordSchema = z
 
 export function ChangePasswordDialog() {
   const { user } = useUser();
+  const auth = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const form = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
@@ -59,6 +63,25 @@ export function ChangePasswordDialog() {
       confirmPassword: '',
     },
   });
+  
+  const handleForgotPassword = async () => {
+    if (!user || !user.email || !auth) {
+        setError("Could not send password reset email. User information is missing.");
+        return;
+    }
+    try {
+        await sendPasswordResetEmail(auth, user.email);
+        toast({
+            title: "Password Reset Email Sent",
+            description: `A reset link has been sent to ${user.email}. Please check your inbox.`,
+        });
+        // Close the dialog after sending the email
+        document.querySelector('[data-radix-dialog-close-button]')?.dispatchEvent(new MouseEvent('click'));
+    } catch (err: any) {
+        setError(err.message || "Failed to send password reset email.");
+    }
+  };
+
 
   const onSubmit = async (data: z.infer<typeof passwordSchema>) => {
     if (!user || !user.email) {
@@ -68,6 +91,7 @@ export function ChangePasswordDialog() {
 
     setIsLoading(true);
     setError(null);
+    setShowForgotPassword(false);
 
     try {
       // Reauthenticate the user first
@@ -88,6 +112,7 @@ export function ChangePasswordDialog() {
       let message = 'An unexpected error occurred.';
       if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
         message = 'The current password you entered is incorrect.';
+        setShowForgotPassword(true);
       } else if (err.code === 'auth/weak-password') {
         message = 'The new password is too weak.';
       }
@@ -112,7 +137,14 @@ export function ChangePasswordDialog() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>
+                {error}
+                {showForgotPassword && (
+                    <Button variant="link" className="p-0 h-auto text-white" onClick={handleForgotPassword}>
+                        Forgot Password?
+                    </Button>
+                )}
+              </AlertDescription>
             </Alert>
           )}
 
@@ -170,5 +202,3 @@ export function ChangePasswordDialog() {
     </DialogContent>
   );
 }
-
-    

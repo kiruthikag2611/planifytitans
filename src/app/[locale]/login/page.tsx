@@ -14,6 +14,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   getAdditionalUserInfo,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 
 import { Button } from '@/components/ui/button';
@@ -197,6 +198,29 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
         defaultValues: { email: '', password: '' },
     });
 
+    const handleForgotPassword = async () => {
+        const email = form.getValues('email');
+        if (!email) {
+            form.setError('email', { type: 'manual', message: 'Please enter your email to reset password.' });
+            return;
+        }
+        if (!auth) return;
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            toast({
+                title: 'Password Reset Email Sent',
+                description: `A reset link has been sent to ${email}.`,
+            });
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Failed to send password reset email. Please check the email address.',
+            });
+        }
+    };
+
     const handleEmailSubmit = async (data: z.infer<typeof signInSchema>) => {
         if (!auth) return;
         setIsLoading(true);
@@ -246,7 +270,12 @@ function SignInForm({ setIsLoading, isLoading }: { setIsLoading: (v: boolean) =>
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-white/80">Password</FormLabel>
+                            <div className="flex justify-between items-center">
+                                <FormLabel className="text-white/80">Password</FormLabel>
+                                <Button type="button" variant="link" className="p-0 h-auto text-xs text-white/70 hover:text-white" onClick={handleForgotPassword}>
+                                    Forgot Password?
+                                </Button>
+                            </div>
                             <div className="relative">
                                 <FormControl>
                                     <Input 
