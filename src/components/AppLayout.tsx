@@ -1,17 +1,18 @@
+
 'use client';
 
 import { usePathname } from 'next/navigation';
 import { Sidebar, SidebarInset, SidebarProvider } from './ui/sidebar';
-import { AppSidebar } from './AppSidebar';
+import AppSidebar from './AppSidebar';
 import { Toaster } from './ui/toaster';
-import { Header } from './Header';
+import Header from './Header';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // Pages that should not have the main app sidebar
-  const noSidebarPaths = ['/', '/login'];
+  const noSidebarPaths = ['/', '/login', '/schedule'];
   
-  const isNoSidebarPage = noSidebarPaths.includes(pathname);
+  const isNoSidebarPage = noSidebarPaths.includes(pathname) || pathname.startsWith('/q/');
   const isOnboarding = pathname.startsWith('/onboarding') || pathname.startsWith('/category');
 
   if (isNoSidebarPage || isOnboarding) {
