@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -23,11 +24,8 @@ export default function AppSidebar(): JSX.Element {
   return (
     <aside className="w-64 border-r bg-muted/60 p-4">
       <div className="mb-6 flex items-center gap-3">
-        <div className="relative h-10 w-10 rounded-md overflow-hidden bg-white/10">
-          <Image src="/logo192.png" alt="logo" fill sizes="40px" style={{ objectFit: 'cover' }} />
-        </div>
         <div>
-          <h3 className="text-sm font-semibold">Planify</h3>
+          <h3 className="text-lg font-semibold">Planify</h3>
           <p className="text-xs text-muted-foreground">Plan smarter</p>
         </div>
       </div>
@@ -41,6 +39,9 @@ export default function AppSidebar(): JSX.Element {
         </Link>
         <Link href="/calendar" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
           <Calendar className="h-4 w-4" /> <span>Calendar</span>
+        </Link>
+        <Link href="/schedule" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
+          <Calendar className="h-4 w-4" /> <span>Timetable</span>
         </Link>
         <Link href="/profile" className="flex items-center gap-3 p-2 rounded hover:bg-accent/30">
           <User className="h-4 w-4" /> <span>Profile</span>

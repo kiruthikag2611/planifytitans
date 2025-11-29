@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -24,17 +25,8 @@ export default function Header(): JSX.Element {
       <div className="mx-auto flex max-w-6xl items-center justify-between p-4 md:p-6">
         
         <Link href="/" className="flex items-center gap-3">
-          <div className="relative h-10 w-10 rounded-md overflow-hidden bg-muted">
-            <Image
-              src="/logo192.png"
-              alt="Planify logo"
-              fill
-              sizes="40px"
-              style={{ objectFit: 'cover' }}
-            />
-          </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-lg font-semibold">Planify</span>
+            <span className="text-xl font-semibold">Planify</span>
             <span className="text-xs text-muted-foreground -mt-1">
               Smarter Schedule, Smoother Days
             </span>

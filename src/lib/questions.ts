@@ -1,170 +1,81 @@
+/**
+ * questions.ts
+ * Cleaned file (merge markers removed). Exports types and some helper lists used by onboarding.
+ */
 
-<<<<<<< HEAD
 export type Question = {
   id: string;
   question: string;
+  type?: 'text' | 'number' | 'select' | 'multiselect' | 'time' | 'date';
+  options?: string[];
+  required?: boolean;
   description?: string;
-  placeholder?: string;
-  type: 'text' | 'email' | 'number' | 'textarea' | 'radio';
-  options?: { value: string; label: string; description?: string }[];
 };
 
-type QuestionSet = {
-  [key: string]: {
-    [key: string]: Question[];
-  };
-};
-
-export const questions: QuestionSet = {
-  academics: {
-    student: [
-      { id: 'classInfo', question: 'What is your Class/Year/Semester?', type: 'text', placeholder: 'e.g., 2nd Year, Computer Science' },
-      { id: 'subjects', question: 'List your subjects.', type: 'textarea', placeholder: 'e.g., Math, Physics, History' },
-      { id: 'hoursPerSubject', question: 'How many hours do you want to study per subject, per week?', type: 'text', placeholder: 'e.g., Math: 5 hours, Physics: 4 hours' },
-      { id: 'studyTime', question: 'When are you most focused?', type: 'radio',
-        options: [
-            { value: 'early-morning', label: 'Early Morning', description: 'The early bird catches the worm!' },
-            { value: 'morning', label: 'Morning', description: 'Fresh and ready to go.' },
-            { value: 'afternoon', label: 'Afternoon', description: 'Power through the day.' },
-            { value: 'evening', label: 'Evening/Night', description: 'A quiet time for focus.' },
-        ]
-      },
-      { id: 'availability', question: 'What are your fixed commitments?', type: 'textarea', description: "List times you're busy (e.g., Classes on Mon 10-12, Part-time job Tue/Thu 5-8 PM)." },
-      { id: 'breakPreferences', question: 'How do you like to take breaks?', type: 'text', placeholder: 'e.g., 15 mins every hour' },
-      { id: 'prioritySubjects', question: 'Which subjects are your top priority?', type: 'textarea', placeholder: 'List subjects you find difficult or have exams for soon.' },
-      { id: 'deadlines', question: 'Any upcoming exams or assignment deadlines?', type: 'text', placeholder: 'e.g., Physics midterm next Friday' },
-      { id: 'routines', question: 'Describe your other routines.', type: 'textarea', description: "Tell us about your sleep schedule, meals, commute, gym, etc.", placeholder: 'e.g., Wake up at 7 AM, Gym Mon/Wed/Fri 6-7 PM' },
-    ],
-    teacher: [
-      { id: 'subjects', question: 'What subjects do you teach?', type: 'textarea', placeholder: 'e.g., Chemistry, Literature' },
-      { id: 'weeklyClasses', question: 'How many weekly classes do you have for each subject?', type: 'text', placeholder: 'e.g., Chemistry: 4, Literature: 3' },
-      { id: 'classNames', question: 'What are the Class/Section names?', type: 'text', placeholder: 'e.g., 10A, 10B, 11-Science' },
-      { id: 'availability', question: 'What are your available days and time slots for teaching?', type: 'textarea', placeholder: 'e.g., Mon-Fri 9 AM to 5 PM, except Wed afternoon' },
-      { id: 'teachingHours', question: 'What are your preferred teaching hours?', type: 'text', placeholder: 'e.g., Mornings are best' },
-      { id: 'restrictedHours', question: 'Do you have any restricted hours?', type: 'text', placeholder: 'e.g., Staff meetings every Friday at 3 PM' },
-      { id: 'maxClassesPerDay', question: 'What is the maximum number of classes you can take in a day?', type: 'number', placeholder: 'e.g., 4' },
-      { id: 'minGap', question: 'What is the minimum gap you need between classes?', type: 'text', placeholder: 'e.g., 30 minutes' },
-      { id: 'specialSessions', question: 'Any special sessions like labs or practicals?', type: 'text', placeholder: 'e.g., Chemistry Lab on Tuesdays, 2-4 PM' },
-    ],
+export const questions: Question[] = [
+  {
+    id: 'q-1',
+    question: 'What is your timezone?',
+    type: 'select',
+    options: ['Asia/Kolkata', 'UTC', 'America/New_York'],
+    required: true,
+    description: 'Used to generate local schedule times'
   },
-};
-=======
+  {
+    id: 'q-2',
+    question: 'When does your academic term start?',
+    type: 'date',
+    required: false
+  },
+  {
+    id: 'q-3',
+    question: 'When does your academic term end?',
+    type: 'date',
+    required: false
+  },
+  {
+    id: 'q-4',
+    question: 'What are your working / study hours on weekdays?',
+    type: 'text',
+    description: 'Example: 08:00-17:00'
+  },
+  {
+    id: 'q-5',
+    question: 'Which subjects do you want to prioritize?',
+    type: 'multiselect',
+    options: ['Math', 'Physics', 'Chemistry', 'CS', 'Biology']
+  }
+];
+
+/**
+ * Timezone list (small subset) — expand as needed.
+ * Kept compact here for speed; you can replace with a full list later.
+ */
 export const timezones = [
   'Etc/GMT+12',
   'Pacific/Midway',
   'Pacific/Honolulu',
-  'America/Juneau',
+  'America/Anchorage',
   'America/Los_Angeles',
-  'America/Tijuana',
-  'America/Denver',
-  'America/Phoenix',
-  'America/Chihuahua',
-  'America/Mazatlan',
   'America/Chicago',
-  'America/Regina',
-  'America/Mexico_City',
-  'America/Guatemala',
   'America/New_York',
-  'America/Indiana/Indianapolis',
-  'America/Bogota',
-  'America/Lima',
-  'America/Halifax',
-  'America/Caracas',
-  'America/La_Paz',
-  'America/Santiago',
-  'America/St_Johns',
-  'America/Sao_Paulo',
-  'America/Argentina/Buenos_Aires',
-  'America/Godthab',
-  'Atlantic/Azores',
-  'Atlantic/Cape_Verde',
-  'Africa/Casablanca',
   'Europe/London',
-  'Europe/Lisbon',
-  'Africa/Monrovia',
-  'Etc/UTC',
-  'Europe/Belgrade',
-  'Europe/Bratislava',
-  'Europe/Budapest',
-  'Europe/Ljubljana',
-  'Europe/Prague',
-  'Europe/Sarajevo',
-  'Europe/Skopje',
-  'Europe/Warsaw',
-  'Europe/Zagreb',
-  'Europe/Brussels',
-  'Europe/Copenhagen',
-  'Europe/Madrid',
-  'Europe/Paris',
-  'Europe/Amsterdam',
   'Europe/Berlin',
-  'Europe/Rome',
-  'Europe/Stockholm',
-  'Europe/Vienna',
-  'Africa/Algiers',
-  'Europe/Bucharest',
-  'Africa/Cairo',
-  'Europe/Helsinki',
-  'Europe/Kyiv',
-  'Europe/Riga',
-  'Europe/Sofia',
-  'Europe/Tallinn',
-  'Europe/Vilnius',
-  'Europe/Athens',
-  'Europe/Istanbul',
-  'Europe/Minsk',
-  'Asia/Jerusalem',
-  'Africa/Harare',
-  'Africa/Johannesburg',
-  'Europe/Moscow',
-  'Asia/Kuwait',
-  'Asia/Riyadh',
-  'Africa/Nairobi',
-  'Asia/Baghdad',
-  'Asia/Tehran',
-  'Asia/Muscat',
-  'Asia/Baku',
-  'Asia/Tbilisi',
-  'Asia/Yerevan',
-  'Asia/Kabul',
-  'Asia/Yekaterinburg',
-  'Asia/Karachi',
-  'Asia/Tashkent',
   'Asia/Kolkata',
-  'Asia/Colombo',
-  'Asia/Kathmandu',
-  'Asia/Almaty',
-  'Asia/Dhaka',
-  'Asia/Novosibirsk',
-  'Asia/Rangoon',
-  'Asia/Bangkok',
-  'Asia/Krasnoyarsk',
-  'Asia/Hong_Kong',
-  'Asia/Chongqing',
-  'Asia/Kuala_Lumpur',
-  'Asia/Singapore',
-  'Asia/Taipei',
-  'Australia/Perth',
-  'Asia/Irkutsk',
-  'Asia/Ulaanbaatar',
-  'Asia/Seoul',
+  'Asia/Shanghai',
   'Asia/Tokyo',
-  'Asia/Yakutsk',
-  'Australia/Darwin',
-  'Australia/Adelaide',
-  'Australia/Brisbane',
-  'Australia/Hobart',
-  'Australia/Melbourne',
   'Australia/Sydney',
-  'Asia/Vladivostok',
-  'Pacific/Guam',
-  'Pacific/Port_Moresby',
-  'Asia/Magadan',
-  'Pacific/Auckland',
-  'Pacific/Fiji',
-  'Pacific/Tongatapu',
 ];
 
-export const preferredTimes = ['Early Morning', 'Morning', 'Afternoon', 'Evening'];
+/**
+ * Preferred study times and block sizes used in onboarding UI
+ */
+export const preferredTimes = ['Early Morning', 'Morning', 'Afternoon', 'Evening', 'Night'];
 export const studyBlockSizes = [25, 50, 90];
->>>>>>> ffc861d (Feature: Onboarding → AI Timetable Generation)
+
+export default {
+  questions,
+  timezones,
+  preferredTimes,
+  studyBlockSizes,
+};
