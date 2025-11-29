@@ -77,7 +77,7 @@ export default function SchedulePage() {
             <Button variant="ghost" size="icon" onClick={() => router.back()}>
                 <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-md sm:text-xl font-bold font-headline">TIMETABLE TOPIC</h1>
+            <h1 className="text-md sm:text-xl font-bold font-headline">Your Timetable</h1>
         </div>
         <div className="flex items-center gap-2">
            <Button variant="outline" size="sm" onClick={() => router.push('/calendar')}><Calendar className="mr-2 h-4 w-4"/> View Calendar</Button>
