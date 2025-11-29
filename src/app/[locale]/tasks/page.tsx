@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -57,6 +58,34 @@ const tasks = [
   },
 ];
 
+const sampleActivities: ActivityWithTimes[] = [
+    {
+        activityId: 'sample-1',
+        title: 'Tech Fest 2024',
+        description: 'The annual technology festival featuring coding competitions, robotics exhibitions, and talks from industry leaders. A must-attend for all tech enthusiasts!',
+        location: 'Main Auditorium',
+        startDatetime: '2024-12-05T09:00:00',
+        endDatetime: '2024-12-06T17:00:00',
+        organizer: 'Computer Science Dept.',
+        imageUrl: 'https://picsum.photos/seed/techfest/400/300',
+        tags: ['fest', 'tech', 'competition'],
+        rsvps: [],
+    },
+    {
+        activityId: 'sample-2',
+        title: 'Workshop on Artificial Intelligence',
+        description: 'A hands-on workshop covering the fundamentals of AI and Machine Learning. Laptops are required. Limited seats available.',
+        location: 'Seminar Hall B',
+        startDatetime: '2024-12-10T11:00:00',
+        endDatetime: '2024-12-10T13:00:00',
+        organizer: 'AI Club',
+        imageUrl: 'https://picsum.photos/seed/aiworkshop/400/300',
+        link: 'https://example.com/ai-workshop',
+        tags: ['workshop', 'ai', 'learning'],
+        rsvps: [],
+    },
+];
+
 export default function TasksAndActivitiesPage() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -81,7 +110,7 @@ export default function TasksAndActivitiesPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="tasks" className="w-full">
+      <Tabs defaultValue="activities" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="activities">Activities</TabsTrigger>
@@ -216,7 +245,16 @@ function ActivitiesView() {
     return query(collection(firestore, 'activities'));
   }, [firestore]);
 
-  const { data: activities, loading } = useCollection<ActivityWithTimes>(activitiesQuery);
+  const { data: fetchedActivities, loading } = useCollection<ActivityWithTimes>(activitiesQuery);
+
+  const activities = useMemo(() => {
+    if (loading) return [];
+    if (fetchedActivities && fetchedActivities.length > 0) {
+        return fetchedActivities;
+    }
+    return sampleActivities;
+  }, [fetchedActivities, loading]);
+
 
   const handleActivityClick = (activity: ActivityWithTimes) => {
     setSelectedActivity(activity);
@@ -235,38 +273,40 @@ function ActivitiesView() {
   if (loading) {
     return (
       <div className="space-y-4 mt-4">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-48 w-full" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6 mt-4">
-      {upcomingActivities.length > 0 ? (
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Upcoming Activities</h3>
-          <div className="space-y-4">
-            {upcomingActivities.map(activity => (
-              <ActivityCard key={activity.activityId} activity={activity} onClick={handleActivityClick} />
-            ))}
-          </div>
-        </div>
+      {(upcomingActivities.length > 0 || pastActivities.length > 0) ? (
+        <>
+            {upcomingActivities.length > 0 && (
+                <div>
+                <h3 className="text-lg font-semibold mb-2">Upcoming Activities</h3>
+                <div className="space-y-4">
+                    {upcomingActivities.map(activity => (
+                    <ActivityCard key={activity.activityId} activity={activity} onClick={handleActivityClick} />
+                    ))}
+                </div>
+                </div>
+            )}
+            {pastActivities.length > 0 && (
+                 <div className="mt-8">
+                    <h3 className="text-lg font-semibold mb-2">Past Activities</h3>
+                    <div className="space-y-4">
+                        {pastActivities.map(activity => (
+                        <ActivityCard key={activity.activityId} activity={activity} onClick={handleActivityClick} />
+                        ))}
+                    </div>
+                </div>
+            )}
+        </>
       ) : (
         <div className="text-center py-16">
-          <p className="text-muted-foreground">No upcoming activities found.</p>
-        </div>
-      )}
-
-      {pastActivities.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Past Activities</h3>
-          <div className="space-y-4">
-            {pastActivities.map(activity => (
-              <ActivityCard key={activity.activityId} activity={activity} onClick={handleActivityClick} />
-            ))}
-          </div>
+          <p className="text-muted-foreground">No activities found.</p>
         </div>
       )}
 
@@ -290,7 +330,7 @@ function ActivityCard({ activity, onClick }: { activity: ActivityWithTimes, onCl
     <Card className="hover:bg-accent/50 transition-all cursor-pointer" onClick={() => onClick(activity)}>
       <CardContent className="p-4 flex gap-4">
         {activity.imageUrl && (
-          <Image src={activity.imageUrl} alt={activity.title} width={80} height={80} className="rounded-md object-cover hidden sm:block" />
+          <Image src={activity.imageUrl} alt={activity.title} width={80} height={80} className="rounded-md object-cover hidden sm:block" data-ai-hint="college event" />
         )}
         <div className="flex-grow">
           <div className="flex justify-between items-start">
@@ -315,3 +355,5 @@ function ActivityCard({ activity, onClick }: { activity: ActivityWithTimes, onCl
     </Card>
   );
 }
+
+    
