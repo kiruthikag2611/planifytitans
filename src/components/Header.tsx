@@ -1,16 +1,25 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/use-user';
 import { getAuth, signOut } from 'firebase/auth';
 import { SidebarTrigger } from './ui/sidebar';
+import { ArrowLeft } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Header(): JSX.Element {
   const { user, status } = useUser();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -21,16 +30,23 @@ export default function Header(): JSX.Element {
     }
   };
 
+  const showBackButton = isClient && pathname !== '/dashboard';
+
   return (
     <header className="w-full border-b bg-background/60 backdrop-blur-sm p-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
-         <SidebarTrigger className="md:hidden"/>
-         <div className="hidden md:block">
-            <h1 className="text-xl font-semibold">Planify</h1>
-            <p className="text-xs text-muted-foreground -mt-1">
-              Smarter Schedule, Smoother Days
-            </p>
-         </div>
+        {showBackButton && (
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        )}
+        <SidebarTrigger className="md:hidden" />
+        <div className="hidden md:block">
+          <h1 className="text-xl font-semibold">Planify</h1>
+          <p className="text-xs text-muted-foreground -mt-1">
+            Smarter Schedule, Smoother Days
+          </p>
+        </div>
       </div>
       <nav className="flex items-center gap-3">
         {status === 'loading' ? (
