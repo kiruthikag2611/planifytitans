@@ -87,56 +87,70 @@ const sampleActivities: ActivityWithTimes[] = [
 ];
 
 export default function TasksAndActivitiesPage() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isEventSheetOpen, setEventSheetOpen] = useState(false);
+  const [isActivitySheetOpen, setActivitySheetOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<ActivityWithTimes | null>(null);
+
+  const handleAddNew = (tab: 'tasks' | 'activities') => {
+    if (tab === 'tasks') {
+        setActivitySheetOpen(false);
+        setEventSheetOpen(true);
+    } else {
+        setSelectedActivity(null);
+        setEventSheetOpen(false);
+        setActivitySheetOpen(true);
+    }
+  };
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Tasks & Activities</h2>
-        <div className="flex items-center space-x-2">
-          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-            <SheetTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add New
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="sm:max-w-lg">
-              <SheetHeader>
-                <SheetTitle>Add New Task or Activity</SheetTitle>
-              </SheetHeader>
-              <EventForm onSave={() => setIsSheetOpen(false)} />
-            </SheetContent>
-          </Sheet>
+       <Tabs defaultValue="activities" className="w-full">
+        <div className="flex items-center justify-between space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">Tasks & Activities</h2>
+            <div className="flex items-center space-x-2">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="tasks" onClick={() => handleAddNew('tasks')}>Tasks</TabsTrigger>
+                    <TabsTrigger value="activities" onClick={() => handleAddNew('activities')}>Activities</TabsTrigger>
+                </TabsList>
+                 <Button onClick={() => handleAddNew(document.querySelector('[data-state=active]')?.getAttribute('data-radix-collection-item') === 'tasks' ? 'tasks' : 'activities')}>
+                    <Plus className="mr-2 h-4 w-4" /> Add New
+                </Button>
+            </div>
         </div>
-      </div>
-
-      <Tabs defaultValue="activities" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="tasks">Tasks</TabsTrigger>
-          <TabsTrigger value="activities">Activities</TabsTrigger>
-        </TabsList>
 
         <TabsContent value="tasks">
           <TasksView />
         </TabsContent>
 
         <TabsContent value="activities">
-          <ActivitiesView />
+          <ActivitiesView onAddActivity={() => handleAddNew('activities')} />
         </TabsContent>
       </Tabs>
 
       {/* Floating add button */}
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      <Sheet open={isEventSheetOpen || isActivitySheetOpen} onOpenChange={(open) => {
+          if (!open) {
+              setEventSheetOpen(false);
+              setActivitySheetOpen(false);
+          }
+      }}>
         <SheetTrigger asChild>
-          <Button className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg">
+          <Button className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-lg" onClick={() => handleAddNew(document.querySelector('[data-state=active]')?.getAttribute('data-radix-collection-item') === 'tasks' ? 'tasks' : 'activities')}>
             <Plus className="h-8 w-8" />
           </Button>
         </SheetTrigger>
         <SheetContent className="sm:max-w-lg">
-          <SheetHeader>
-            <SheetTitle>Add New Task or Event</SheetTitle>
-          </SheetHeader>
-          <EventForm onSave={() => setIsSheetOpen(false)} />
+            {isEventSheetOpen && (
+                <>
+                    <SheetHeader>
+                        <SheetTitle>Add New Task</SheetTitle>
+                    </SheetHeader>
+                    <EventForm onSave={() => setEventSheetOpen(false)} />
+                </>
+            )}
+            {isActivitySheetOpen && (
+                 <ActivitySheet activity={selectedActivity} onSave={() => setActivitySheetOpen(false)} />
+            )}
         </SheetContent>
       </Sheet>
     </div>
@@ -235,7 +249,7 @@ function TaskCard({ task }: { task: any }) {
    Activities UI (Firestore-backed)
    ------------------------- */
 
-function ActivitiesView() {
+function ActivitiesView({ onAddActivity }: { onAddActivity: () => void }) {
   const firestore = useFirestore();
   const [selectedActivity, setSelectedActivity] = useState<ActivityWithTimes | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -257,6 +271,11 @@ function ActivitiesView() {
 
 
   const handleActivityClick = (activity: ActivityWithTimes) => {
+    setSelectedActivity(activity);
+    setIsSheetOpen(true);
+  };
+  
+  const handleOpenSheet = (activity: ActivityWithTimes | null = null) => {
     setSelectedActivity(activity);
     setIsSheetOpen(true);
   };
@@ -307,6 +326,7 @@ function ActivitiesView() {
       ) : (
         <div className="text-center py-16">
           <p className="text-muted-foreground">No activities found.</p>
+          <Button className="mt-4" size="sm" onClick={() => handleOpenSheet()}>Add Activity</Button>
         </div>
       )}
 
