@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Download, Loader2, Calendar } from 'lucide-react';
+import { Download, Loader2, Calendar, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
@@ -72,6 +72,18 @@ export default function SchedulePage() {
 
   return (
     <div className="flex flex-col h-screen bg-background">
+       <header className="flex items-center justify-between p-4 border-b sticky top-0 bg-background/95 z-20">
+        <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-md sm:text-xl font-bold font-headline">TIMETABLE TOPIC</h1>
+        </div>
+        <div className="flex items-center gap-2">
+           <Button variant="outline" size="sm" onClick={() => router.push('/calendar')}><Calendar className="mr-2 h-4 w-4"/> View Calendar</Button>
+           <Button size="sm"><Download className="mr-2 h-4 w-4" /> Save</Button>
+        </div>
+      </header>
       <main className="flex-1 overflow-auto p-2 sm:p-4">
         {loading ? (
             <div className="flex items-center justify-center h-full">
