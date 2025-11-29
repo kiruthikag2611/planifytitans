@@ -30,17 +30,18 @@ export default function Header(): JSX.Element {
     }
   };
 
+  // Only show back button if on a client and not on the dashboard page
   const showBackButton = isClient && pathname !== '/dashboard';
 
   return (
     <header className="w-full border-b bg-background/60 backdrop-blur-sm p-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
+        <SidebarTrigger />
         {showBackButton && (
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
         )}
-        <SidebarTrigger className="md:hidden" />
         <div className="hidden md:block">
           <h1 className="text-xl font-semibold">Planify</h1>
           <p className="text-xs text-muted-foreground -mt-1">
