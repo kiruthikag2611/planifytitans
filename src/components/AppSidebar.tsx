@@ -3,21 +3,23 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Home, Calendar, List, Brain, Settings, Power } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase/auth/use-user';
 import { getAuth, signOut } from 'firebase/auth';
-import Image from 'next/image';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from './ui/sidebar';
 
 export default function AppSidebar(): JSX.Element {
   const { user, status } = useUser();
   const { state } = useSidebar();
+  const router = useRouter();
 
   const handleSignOut = async () => {
     try {
       const auth = getAuth();
       await signOut(auth);
+      router.push('/');
     } catch (err) {
       console.error('Sign-out failed', err);
     }
@@ -70,7 +72,7 @@ export default function AppSidebar(): JSX.Element {
           <div className="text-sm text-muted-foreground p-2">Loading...</div>
         ) : user ? (
           <div className="space-y-2 p-2">
-            <Button variant="ghost" className="w-full justify-center" onClick={handleSignOut}>
+            <Button variant="ghost" className="w-full justify-start text-left p-2" onClick={handleSignOut}>
                 <Power className="mr-2 h-4 w-4" />
                 {state === 'expanded' && <span>Logout</span>}
             </Button>
