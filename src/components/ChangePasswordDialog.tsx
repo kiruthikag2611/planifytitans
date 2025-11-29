@@ -144,7 +144,7 @@ export function ChangePasswordDialog() {
               <AlertDescription>
                 {error}
                 {showForgotPassword && (
-                    <Button variant="link" className="p-0 h-auto text-white" onClick={handleForgotPassword}>
+                    <Button variant="link" className="p-0 h-auto text-black dark:text-white" onClick={handleForgotPassword}>
                         Forgot Password?
                     </Button>
                 )}
